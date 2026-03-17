@@ -1,0 +1,201 @@
+/* ==========================================================================
+   PIECE OUT - GLOBAL STYLES
+   This file contains the foundational styles, design tokens (variables), 
+   and common components used across all screens.
+   ========================================================================== */
+
+:root {
+  /* Color Palette */
+  --bg: #fff4ec;
+  --orange: #f97316;
+  --orange-dark: #c2410c;
+  --purple: #8176DE;
+  --purple-light: #9275d3;
+  --blue: #38bdf8;
+  --blue-light: #6ed3ff;
+  --yellow: #ffde2d;
+  --green: #22c55e;
+  --red: #ef4444;
+  --dark: #333;
+  --grey: #888;
+
+  /* UI Tokens */
+  --card-bg: #fff;
+  --card-shadow: 0 8px 30px rgba(0,0,0,.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-pill: 100px;
+  
+  /* Typography */
+  --font: 'Londrina Solid', cursive;
+  
+  /* Animation */
+  --transition: .2s ease;
+}
+
+/* 
+   --------------------------------------------------------------------------
+   RESET & BASE STYLES
+   -------------------------------------------------------------------------- 
+*/
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { font-size: 16px; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--dark);
+  overflow: hidden;         /* Prevents bounce/scroll on mobile */
+  width: 100vw;
+  height: 100dvh;
+  -webkit-user-select: none; /* Disables text selection for a native app feel */
+  user-select: none;
+}
+
+button { font-family: var(--font); cursor: pointer; border: none; outline: none; }
+input  { font-family: var(--font); outline: none; border: none; }
+
+/* 
+   --------------------------------------------------------------------------
+   SCREEN MANAGEMENT
+   All major views are positioned fixed and hidden by default. 
+   The .active class is used by JS to toggle visibility.
+   -------------------------------------------------------------------------- 
+*/
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  background: var(--bg);
+}
+.screen.active { display: flex; }
+
+@keyframes subtleFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes subtleRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.screen.active {
+  animation: subtleFadeIn 220ms ease-out both;
+}
+
+.screen.active > *:not(.background-logo):not(.background-logo-2):not(.hint-pill) {
+  animation: subtleRiseIn 280ms ease-out both;
+}
+
+.modal-overlay.open {
+  animation: subtleFadeIn 220ms ease-out both;
+}
+
+.modal-overlay.open .modal-card {
+  animation: subtleRiseIn 280ms ease-out both;
+}
+
+/* 
+   --------------------------------------------------------------------------
+   COMMON COMPONENTS: BUTTONS
+   Standardized button styles using a '3D' press effect via box-shadow.
+   -------------------------------------------------------------------------- 
+*/
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6em;
+  padding: .7em 1.8em;
+  font-size: clamp(1rem, 2.2vmin, 2rem);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border-radius: var(--radius-pill);
+  color: #fff;
+  transition: transform var(--transition), box-shadow var(--transition);
+  white-space: nowrap;
+}
+
+/* Press effect: moves button down and shrinks shadow */
+.btn:active { transform: translateY(3px); }
+
+.btn-icon { font-size: .85em; }
+
+/* Color Variants */
+.btn--orange      { background: var(--orange);  box-shadow: 0 6px 0 var(--orange-dark); }
+.btn--orange:active { box-shadow: 0 2px 0 var(--orange-dark); }
+
+.btn--purple      { background: var(--purple);  box-shadow: 0 6px 0 #4F478F; }
+.btn--purple:active { box-shadow: 0 2px 0 #4F478F; }
+
+.btn--blue        { background: var(--blue);    box-shadow: 0 6px 0 #0284c7; }
+.btn--blue:active { box-shadow: 0 2px 0 #0284c7; }
+
+.btn--red         { background: var(--red);     box-shadow: 0 6px 0 #b91c1c; }
+.btn--red:active  { box-shadow: 0 2px 0 #b91c1c; }
+
+.btn--dark        { background: var(--orange);    box-shadow: 0 6px 0 var(--orange-dark); }
+.btn--dark:active { box-shadow: 0 2px 0 #111; }
+
+/* Size Modifiers */
+.btn--xl   { font-size: clamp(1.6rem, 3.5vmin, 3.2rem); padding: .7em 2.2em; }
+.btn--sm   { font-size: clamp(.85rem, 1.8vmin, 1.5rem); padding: .5em 1.2em; }
+.btn--wide { width: 100%; max-width: 340px; }
+
+/* 
+   --------------------------------------------------------------------------
+   RESPONSIVE OVERRIDES
+   Global adjustments for mobile and ultra-wide screens.
+   -------------------------------------------------------------------------- 
+*/
+@media (max-width: 700px) {
+  .cat-layout { flex-direction: column; }
+  .cat-sidebar {
+    flex-direction: row;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+    padding-bottom: .4rem;
+  }
+  .cat-btn { white-space: nowrap; flex-shrink: 0; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .lb-container { flex-direction: column; overflow-y: auto; }
+  .lb-info-panel { width: 100%; padding: 20px; }
+  .lb-main-panel { padding: 20px; }
+
+  .help-body { flex-direction: column; align-items: center; text-align: center; }
+  .details-body { flex-direction: column; align-items: center; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen.active,
+  .screen.active > *:not(.background-logo):not(.background-logo-2):not(.hint-pill),
+  .modal-overlay.open,
+  .modal-overlay.open .modal-card {
+    animation: none !important;
+  }
+}
+
+/* Scaling font-size for very large displays */
+@media (min-width: 2000px) { html { font-size: 20px; } }
+@media (min-width: 3000px) { html { font-size: 28px; } }

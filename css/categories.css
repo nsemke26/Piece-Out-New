@@ -1,0 +1,200 @@
+/* ==========================================================================
+   PIECE OUT - CATEGORIES & PUZZLE SELECTION
+   Styles for the category navigation sidebar and the responsive grid 
+   of puzzle cards.
+   ========================================================================== */
+
+#screen-categories { justify-content: flex-start; }
+
+/* 
+   --------------------------------------------------------------------------
+   HEADER
+   -------------------------------------------------------------------------- 
+*/
+.cat-header {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: start;
+  /* padding: clamp(.6rem, 1.2vmin, 1.2rem) 0; */
+}
+.cat-header__logo {
+  font-size: clamp(1.4rem, 3vmin, 2.8rem);
+  color: white;
+  text-transform: uppercase;
+  background-color: var(--purple-light);
+  padding: 1rem 2rem;
+  display: inline-block;
+  width: 25%;
+  text-align: center;
+}
+
+.logo {
+  width: 30px;
+  text-align: center;
+}
+
+/* 
+   --------------------------------------------------------------------------
+   LAYOUT
+   Main view consists of a sidebar (nav) and a main scrollable area (grid).
+   -------------------------------------------------------------------------- 
+*/
+.cat-layout {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 
+   --------------------------------------------------------------------------
+   SIDEBAR (NAVIGATION)
+   -------------------------------------------------------------------------- 
+*/
+.cat-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(.4rem, .8vmin, .8rem);
+  padding: clamp(.6rem, 1.2vmin, 1.2rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+  /* width: clamp(130px, 20vw, 260px); */
+  scrollbar-width: thin;
+  justify-content: center;
+  background-color: var(--purple-light);
+  width: 25%;
+}
+
+/* Individual category buttons */
+.cat-btn {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  width: 100%;
+  padding: .55em 1em;
+  /* font-size: clamp(.85rem, 1.8vmin, 1.6rem); */
+  font-weight: 400;
+  text-transform: uppercase;
+  border-radius: 2rem;
+  border: 10px solid white;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  font-size: 3.5rem;
+  text-wrap: nowrap;
+  margin: .2rem 0;
+}
+
+.cat-btn.active {
+  background: var(--orange);
+  color: #fff;
+  border-color: var(--orange);
+}
+
+.cat-btn:not(.active):hover {
+  background: var(--blue-light);
+  border-color: var(--blue-light);
+}
+
+.cat-btn__icon { font-size: 1.15em; }
+
+/* 
+   --------------------------------------------------------------------------
+   MAIN GRID AREA
+   -------------------------------------------------------------------------- 
+*/
+.cat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* padding: clamp(.6rem, 1.2vmin, 1.2rem); */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  gap: clamp(.8rem, 1.5vmin, 1.4rem);
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(.6rem, 1.2vmin, 1.2rem);
+  width: 70%;
+  /* max-width: 800px; */
+}
+
+/* 
+   --------------------------------------------------------------------------
+   PUZZLE CARD
+   Individual puzzle entry with image preview and details button.
+   -------------------------------------------------------------------------- 
+*/
+.puzzle-card {
+  background: var(--orange);
+  border-radius: 2rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  cursor: pointer;
+  transition: transform var(--transition);
+  padding-top: 1rem;
+}
+
+.puzzle-card:hover { transform: scale(1.02); }
+
+.puzzle-card__img {
+  width: 90%;
+  aspect-ratio: 4/3;
+  background-size: cover;
+  background-position: center;
+  border-radius: 2rem;
+  margin: 0 auto;
+}
+
+.puzzle-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.puzzle-card__title {
+  font-size: clamp(2rem, 1.6vmin, 1.4rem);
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.puzzle-card__details {
+  padding: .25em .7em;
+  border-radius: var(--radius-sm);
+  background: var(--purple);
+  color: #fff;
+  font-size: clamp(2rem, 1.2vmin, 1rem);
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+}
+
+/* BACKGROUND LOGO STYLING */
+.bg-logo {
+  width: 30%;
+  position: absolute;
+  opacity: 50%;
+  margin-right: 50rem;
+  rotate: -65deg;
+  margin-top: 50rem;
+}
+
+.bg2-logo {
+  position: absolute;
+  opacity: 50%;
+  margin-left: 100rem;
+  rotate: 80deg;
+  margin-top: -10rem;
+}

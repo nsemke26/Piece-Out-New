@@ -1,0 +1,180 @@
+/* ==========================================================================
+   PIECE OUT - LANDING SCREENS
+   Styles for the Splash Screen and Name Entry Card. 
+   Uses fluid typography (clamp) to scale across all device sizes.
+   ========================================================================== */
+
+/* 
+   --------------------------------------------------------------------------
+   SPLASH SCREEN
+   The main entry screen with the hero logo.
+   -------------------------------------------------------------------------- 
+*/
+.background-logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 50%;
+}
+
+.background-logo-2 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 50%;
+  transform: rotate(180deg);
+}
+
+.splash-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.2rem, 3.2vh, 2.6rem);
+  height: 62%;
+}
+
+.text-logo {
+  font-family: var(--font);
+  font-weight: 900;
+  text-align: left;
+  line-height: 0.8;
+  color: #8176DE;
+  /* Thick text shadow for the comic/game aesthetic */
+  text-shadow: 0 clamp(6px, 1.2vw, 8px) 0 #4F478F;
+  margin-bottom: clamp(0.6rem, 2.2vh, 1.6rem);
+  letter-spacing: -0.02em;
+}
+
+.text-logo__row {
+  font-size: clamp(6rem, 16vw, 28rem);
+}
+
+.text-logo__dash {
+  font-size: 0.4em;
+  margin-left: 0.2em;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Hero Button for Splash */
+.btn-start-game {
+  background: var(--orange);
+  padding: clamp(0.75rem, 2vh, 1.6rem) clamp(2rem, 5vw, 3.8rem);
+  font-size: clamp(1.4rem, 3.4vw, 3rem);
+  font-weight: 900;
+  border-radius: var(--radius-pill);
+  color: #fff;
+  box-shadow: 0 clamp(6px, 1vw, 12px) 0 0 var(--orange-dark);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  border: none;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.btn-start-game:active {
+  transform: translateY(clamp(4px, 0.6vw, 12px));
+  box-shadow: 0 clamp(4px, 0.6vw, 12px) 0 0 var(--orange-dark);
+}
+
+.play-icon {
+  width: 0.8em;
+  height: 0.8em;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.hint-pill {
+  background: #d9d9d9;
+  padding: 0.65em 1.6em;
+  border-radius: var(--radius-pill);
+  font-size: clamp(0.8rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  color: #505050;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: clamp(0.6rem, 2vh, 1.2rem);
+
+  img {
+    width: 1.2em;
+    height: 1.2em;
+  }
+}
+
+#screen-splash .hint-pill {
+  position: absolute;
+  bottom: clamp(1.8rem, 4.2vh, 2.8rem);
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0;
+}
+
+.touch-icon {
+  width: 1.2em;
+  height: 1.2em;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23505050'%3E%3Cpath d='M10 17l-3-3 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 
+   --------------------------------------------------------------------------
+   NAME ENTRY CARD
+   Centered card containing input and guest/start buttons.
+   -------------------------------------------------------------------------- 
+*/
+#screen-name {
+  display: none;
+  z-index: 20;
+  background: rgba(115, 115, 115, 0.6);
+}
+
+#screen-name.open {
+  display: flex;
+}
+
+.name-card {
+  position: relative;
+  z-index: 1;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: clamp(2rem, 4vmin, 4rem);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(.8rem, 1.8vmin, 1.6rem);
+  width: 90%;
+  max-width: 420px;
+}
+
+.name-card__title {
+  font-size: clamp(1.6rem, 3.5vmin, 3rem);
+  color: var(--purple);
+  text-transform: uppercase;
+}
+
+.name-card__input-wrap {
+  width: 100%;
+  background: #f3f3f3;
+  border-radius: var(--radius-sm);
+  padding: .6em 1em;
+}
+
+.name-card__input {
+  width: 100%;
+  font-size: clamp(1rem, 2vmin, 1.6rem);
+  background: transparent;
+  color: var(--dark);
+}
+
+.name-card__input::placeholder { color: #aaa; }
+

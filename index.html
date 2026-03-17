@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>PieceOut - Sliding Puzzle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Typography: Londrina Solid from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Modular CSS Structure: Styles are split by screen/functionality for maintainability -->
+    <link rel="stylesheet" href="./css/style.css" />
+    <!-- Global variables, reset, and common components -->
+    <link rel="stylesheet" href="./css/landing.css" />
+    <!-- Splash and Name Entry screens -->
+    <link rel="stylesheet" href="./css/categories.css" />
+    <!-- Category sidebar and Puzzle grid -->
+    <link rel="stylesheet" href="./css/game.css" />
+    <!-- Active puzzle board and gameplay UI -->
+    <link rel="stylesheet" href="./css/leaderboard.css" />
+    <!-- Post-game global high scores screen -->
+    <link rel="stylesheet" href="./css/modals.css" />
+    <!-- Overlay dialogs for Help, Success, and Details -->
+  </head>
+
+  <body>
+    <!-- 
+    ==========================================================================
+    SCREEN: SPLASH
+    The initial landing view. Features a bold, stylized text logo and a 
+    primary call-to-action to begin the game experience.
+    ========================================================================== 
+  -->
+    <div id="screen-splash" class="screen active">
+      <div class="splash-content">
+        <div class="text-logo">
+          <div class="text-logo__row">PIECE</div>
+          <div class="text-logo__row">
+            OUT!<span class="text-logo__dash">-</span>
+          </div>
+        </div>
+
+        <button id="btn-splash" class="btn btn-start-game">
+          START GAME <span class="play-icon"></span>
+        </button>
+      </div>
+      <div class="hint-pill">
+        Tap the screen to interact <img src="images/tap-icon.svg" alt="" />
+      </div>
+      <img src="images/background-logo.svg" alt="" class="background-logo">
+      <img src="images/background-logo.svg" alt="" class="background-logo-2">
+    </div>
+
+    <!-- 
+    ==========================================================================
+    SCREEN: NAME ENTRY
+    Allows users to personalize their experience. Includes validation for 
+    custom names and a 'Guest' option for quick entry using generated aliases.
+    ========================================================================== 
+  -->
+    <div id="screen-name" class="screen">
+      <div class="name-card">
+        <h2 class="name-card__title">ENTER YOUR NAME</h2>
+        <div class="name-card__input-wrap">
+          <input
+            type="text"
+            id="input-name"
+            class="name-card__input"
+            placeholder="Name"
+            maxlength="16"
+            autocomplete="off"
+          />
+        </div>
+        <button id="btn-start-named" class="btn btn--orange btn--wide">
+          START GAME <span class="btn-icon">&#9654;</span>
+        </button>
+        <button id="btn-guest" class="btn btn--blue btn--wide">
+          PLAY AS GUEST
+        </button>
+      </div>
+    </div>
+
+    <!-- 
+    ==========================================================================
+    SCREEN: CATEGORIES
+    A catalog of available puzzles. Uses a dual-panel layout:
+    - Sidebar: Navigates through thematic categories (Landscapes, Animals, etc.)
+    - Main Grid: Displays puzzle cards for selection.
+    ========================================================================== 
+  -->
+  <div id="screen-categories" class="screen">
+    <img src="images/Logo.png" alt="" class="bg-logo">
+    <img src="images/Logo.png" alt="" class="bg2-logo">
+    <header class="cat-header">
+      <span class="cat-header__logo"> <img src="images/Logo.png"  class="logo" alt=""> PIECE-OUT!</span>
+    </header>
+    <div class="cat-layout">
+      <!-- Navigation for filtering puzzles -->
+      <nav id="cat-sidebar" class="cat-sidebar"></nav>
+      <!-- Dynamic grid where puzzle cards are injected via JavaScript -->
+      <div class="cat-main">
+        <div id="cat-grid" class="cat-grid"></div>
+        <button id="btn-random" class="btn btn--dark btn--wide">
+          RANDOM <span class="btn-icon">&#128256;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+    <!-- 
+    ==========================================================================
+    SCREEN: GAME
+    The core gameplay environment. Contains the 4x4 sliding puzzle board, 
+    real-time timer, and navigation controls.
+    ========================================================================== 
+  -->
+    <div id="screen-game" class="screen">
+      <div class="game-header">
+        <button id="btn-back" class="btn btn--purple btn--sm">
+          &larr; BACK
+        </button>
+        <h2 class="game-header__title">SLIDE PIECES IN PLACE</h2>
+        <div id="game-timer" class="game-timer">&#9201; 0:00</div>
+      </div>
+      <div class="game-body">
+        <!-- Interactive puzzle grid where tiles are dynamically rendered -->
+        <div id="puzzle-grid" class="puzzle-grid"></div>
+      </div>
+      <div class="game-footer">
+        <button id="btn-reset" class="btn btn--purple">&#8635; RESET</button>
+        <button id="btn-help" class="btn btn--blue">&#9432; HELP</button>
+        <!-- Debug tool for development testing -->
+        <button
+          id="btn-debug-solve"
+          class="btn-debug"
+          title="Debug: Auto-solve"
+        >
+          &#128027;
+        </button>
+      </div>
+    </div>
+
+    <!-- 
+    ==========================================================================
+    SCREEN: LEADERBOARD
+    Comprehensive results screen showing:
+    - Left Panel: The completed puzzle image and description.
+    - Right Panel: Global high scores and the player's personalized rank row.
+    ========================================================================== 
+  -->
+    <div id="screen-leaderboard" class="screen">
+      <div class="lb-container">
+        <!-- Left Panel: Puzzle Context -->
+        <div class="lb-info-panel">
+          <div class="lb-info-card">
+            <div id="lb-image" class="lb-image"></div>
+          </div>
+          <div class="lb-info-text">
+            <h3 id="lb-title" class="lb-title">PUZZLE TITLE</h3>
+            <p id="lb-desc" class="lb-desc">
+              Puzzle description text goes here...
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Panel: Competitive Rankings -->
+        <div class="lb-main-panel">
+          <div class="lb-header-group">
+            <div class="lb-title-wrap">
+              <h2 class="lb-heading">LEADERBOARD</h2>
+              <img
+                src="images/trophy.svg"
+                alt="Trophy"
+                class="lb-trophy-icon"
+              />
+            </div>
+            <p class="lb-sub">GLOBAL HIGH SCORES &bull; THIS WEEK</p>
+          </div>
+
+          <!-- Scrollable Score Table -->
+          <div class="lb-table-container">
+            <table class="lb-table">
+              <thead>
+                <tr>
+                  <th class="col-rank">RANK</th>
+                  <th class="col-player">PLAYER</th>
+                  <th class="col-time">TIME</th>
+                  <th class="col-moves">MOVES</th>
+                </tr>
+              </thead>
+              <tbody id="lb-tbody">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+            <!-- Personalized 'YOU' row highlighted for context -->
+            <div id="lb-you" class="lb-you"></div>
+          </div>
+
+          <div class="lb-actions">
+            <button id="btn-lb-restart" class="btn btn-restart">
+              <img src="images/restart.svg" alt="" class="btn-svg-icon" />
+              RESTART
+            </button>
+            <button id="btn-lb-home" class="btn btn-home">
+              <img src="images/home.svg" alt="" class="btn-svg-icon" /> HOME
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- 
+    ==========================================================================
+    MODAL: HELP
+    In-game reference tool showing the target image and gameplay instructions.
+    ========================================================================== 
+  -->
+    <div id="modal-help" class="modal-overlay">
+      <div class="modal-card modal-card--help">
+        <h2 class="modal-card__title">Help</h2>
+        <div class="help-body">
+          <div id="help-image" class="help-image"></div>
+          <div class="help-info">
+            <h3 id="help-name" class="help-info__name"></h3>
+            <p id="help-desc" class="help-info__desc"></p>
+            <p class="help-info__attr-label"><strong>How to play</strong></p>
+            <p class="help-info__attr">
+              Slide tiles by tapping or dragging them into the empty space.
+              Arrange all pieces to complete the image.
+            </p>
+          </div>
+        </div>
+        <button id="btn-help-close" class="btn btn--red">
+          &#10005; Close Modal
+        </button>
+      </div>
+    </div>
+
+    <!-- 
+    ==========================================================================
+    MODAL: PUZZLE COMPLETE
+    Victory dialog appearing immediately upon solving. Summarizes performance
+    metrics and provides navigational shortcuts.
+    ========================================================================== 
+  -->
+    <div id="modal-complete" class="modal-overlay">
+      <div class="modal-card modal-card--complete">
+        <h2 class="modal-card__title">Puzzle Complete!!</h2>
+        <div class="complete-stats">
+          <div class="stat-pill stat-pill--blue">
+            <span class="stat-pill__label">Moves Made</span>
+            <span id="stat-moves" class="stat-pill__value">0</span>
+          </div>
+          <div class="stat-pill stat-pill--yellow">
+            <span class="stat-pill__label">Time Taken</span>
+            <span id="stat-time" class="stat-pill__value">0:00</span>
+          </div>
+          <div class="stat-pill stat-pill--green">
+            <span class="stat-pill__label">Leaderboard</span>
+            <span id="stat-rank" class="stat-pill__value">&mdash;</span>
+          </div>
+        </div>
+        <div class="complete-actions">
+          <button id="btn-cpl-close" class="btn btn--red btn--sm">
+            &#10005; Close Modal
+          </button>
+          <button id="btn-cpl-lb" class="btn btn--purple btn--sm">
+            &#128203; Leaderboard
+          </button>
+          <button id="btn-cpl-cats" class="btn btn--orange btn--sm">
+            &#129513; Categories
+          </button>
+          <button id="btn-cpl-restart" class="btn btn--purple btn--sm">
+            &#8635; Restart
+          </button>
+        </div>
+      </div>
+      <div class="complete-actions">
+        <button id="btn-cpl-close" class="btn btn--purple btn--sm">&#10005; Close Modal</button>
+        <button id="btn-cpl-lb" class="btn btn--orange btn--sm">&#128203; Leaderboard</button>
+        <button id="btn-cpl-cats" class="btn btn--orange btn--sm">&#129513; Categories</button>
+        <button id="btn-cpl-restart" class="btn btn--purple btn--sm">&#8635; Restart</button>
+      </div>
+    </div>
+
+    <!-- 
+    ==========================================================================
+    MODAL: DETAILS
+    Pre-game informational dialog for a specific puzzle, showing title, 
+    description, and category before the player commits to playing.
+    ========================================================================== 
+  -->
+    <div id="modal-details" class="modal-overlay">
+      <div class="modal-card modal-card--details">
+        <h2 class="modal-card__title">Puzzle Details</h2>
+        <div class="details-body">
+          <div id="details-image" class="details-image"></div>
+          <div class="details-info">
+            <h3 id="details-name"></h3>
+            <p id="details-desc"></p>
+            <p id="details-cat"></p>
+          </div>
+        </div>
+        <div class="details-actions">
+          <button id="btn-details-play" class="btn btn--orange">
+            &#9654; PLAY
+          </button>
+          <button id="btn-details-close" class="btn btn--red">
+            &#10005; Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Application Logic -->
+    <script src="./script.js"></script>
+  </body>
+</html>
