@@ -43,12 +43,12 @@ const IMG = './images/joaquin.png';    // Placeholder image used across the demo
 
 // Defined categories for the sidebar navigation
 const CATEGORIES = [
-  { id: 'landscapes', name: 'Landscapes',        icon: '\u{1F3D4}' },
-  { id: 'movies',     name: 'Movies',            icon: '\u{1F3AC}' },
-  { id: 'animals',    name: 'Animals',            icon: '\u{1F43E}' },
-  { id: 'all',        name: 'All',                icon: '\u{1F9E9}' },
-  { id: 'food',       name: 'Food',               icon: '\u{1F374}' },
-  { id: 'indigenous', name: 'Indigenous Art',  icon: '\u{1F3A8}' },
+  { id: 'landscapes', name: 'Landscapes',        icon: 'ph-fill ph-mountains' },
+  { id: 'movies',     name: 'Movies',            icon: 'ph-fill ph-film-slate' },
+  { id: 'animals',    name: 'Animals',            icon: 'ph-fill ph-paw-print' },
+  { id: 'all',        name: 'All',                icon: 'ph-fill ph-puzzle-piece' },
+  { id: 'food',       name: 'Food',               icon: 'ph-fill ph-hamburger' },
+  { id: 'indigenous', name: 'Indigenous Art',  icon: 'ph-fill ph-palette' },
 ];
 
 // The full puzzle database
@@ -367,7 +367,12 @@ function renderSidebar() {
   CATEGORIES.forEach(cat => {
     const btn = document.createElement('button');
     btn.className = 'cat-btn' + (cat.id === state.selectedCategory ? ' active' : '');
-    btn.innerHTML = `<span class="cat-btn__icon">${cat.icon}</span> ${cat.name}`;
+    const iconMarkup = cat.iconClass
+      ? `<i class="${cat.iconClass}" aria-hidden="true"></i>`
+      : (typeof cat.icon === 'string' && cat.icon.includes('ph-'))
+        ? `<i class="${cat.icon}" aria-hidden="true"></i>`
+        : cat.icon;
+    btn.innerHTML = `<span class="cat-btn__icon">${iconMarkup}</span> ${cat.name}`;
     btn.addEventListener('click', () => {
       state.selectedCategory = cat.id;
       renderCategories();

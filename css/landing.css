@@ -146,18 +146,20 @@
   z-index: 1;
   background: var(--card-bg);
   border-radius: var(--radius);
-  padding: clamp(2rem, 4vmin, 4rem);
+  padding: clamp(28px, 3vmin, 64px);
   box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(.8rem, 1.8vmin, 1.6rem);
-  width: 90%;
-  max-width: 420px;
+  gap: clamp(12px, 1.4vmin, 26px);
+  width: min(92vw, clamp(420px, 30vw, 760px));
+  max-width: none;
 }
 
 .name-card__title {
-  font-size: clamp(1.6rem, 3.5vmin, 3rem);
+  font-size: clamp(28px, 2.4vmin, 56px);
+  line-height: 1;
+  text-align: center;
   color: var(--purple);
   text-transform: uppercase;
 }
@@ -171,10 +173,14 @@
 
 .name-card__input {
   width: 100%;
-  font-size: clamp(1rem, 2vmin, 1.6rem);
+  font-size: clamp(18px, 1.6vmin, 34px);
   background: transparent;
   color: var(--dark);
 }
 
 .name-card__input::placeholder { color: #aaa; }
+
+#screen-name .btn--wide {
+  max-width: 100%;
+}
 
