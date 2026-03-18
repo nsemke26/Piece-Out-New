@@ -162,9 +162,12 @@
 }
 
 .lb-trophy-icon {
-  width: clamp(40px, 4vw, 80px);
-  height: clamp(40px, 4vw, 80px);
-  object-fit: contain;
+  font-size: clamp(40px, 4vw, 80px);
+  line-height: 1;
+  color: #8176de;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lb-sub {

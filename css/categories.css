@@ -6,32 +6,61 @@
 
 #screen-categories { justify-content: flex-start; }
 
+#screen-categories .background-logo,
+#screen-categories .background-logo-2 {
+  display: none;
+}
+
+/* Keep corner art consistent, but offset for the left sidebar area */
+#screen-categories .background-logo {
+  left: 25%;
+  top: -4%;
+  height: 45%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+#screen-categories .background-logo-2 {
+  right: 0;
+  bottom: -4%;
+  height: 45%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 /* 
    --------------------------------------------------------------------------
    HEADER
    -------------------------------------------------------------------------- 
 */
 .cat-header {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  text-align: start;
-  /* padding: clamp(.6rem, 1.2vmin, 1.2rem) 0; */
+  position: absolute;
+  top: clamp(.8rem, 1.4vmin, 1.4rem);
+  left: clamp(.8rem, 1.2vmin, 1.2rem);
+  z-index: 3;
+  width: calc(25% - clamp(1.6rem, 2.4vmin, 2.4rem));
+  text-align: center;
 }
 .cat-header__logo {
-  font-size: clamp(1.4rem, 3vmin, 2.8rem);
-  color: white;
+  font-size: clamp(2.9rem, 5.6vmin, 5.4rem);
+  color: var(--purple);
   text-transform: uppercase;
-  background-color: var(--purple-light);
-  padding: 1rem 2rem;
-  display: inline-block;
-  width: 25%;
+  background-color: var(--bg);
+  padding: 1.4rem 2.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85em;
+  width: 100%;
   text-align: center;
+  white-space: nowrap;
+  border-radius: 2rem;
 }
 
 .logo {
-  width: 30px;
+  width: clamp(76px, 6.3vmin, 120px);
   text-align: center;
+  filter: none;
 }
 
 /* 
@@ -58,7 +87,7 @@
   display: flex;
   flex-direction: column;
   gap: clamp(.4rem, .8vmin, .8rem);
-  padding: clamp(.6rem, 1.2vmin, 1.2rem);
+  padding: clamp(11rem, 14vmin, 15rem) clamp(.6rem, 1.2vmin, 1.2rem) clamp(.8rem, 1.2vmin, 1.2rem);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   flex-shrink: 0;
@@ -123,9 +152,51 @@
 .cat-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: clamp(.6rem, 1.2vmin, 1.2rem);
-  width: 70%;
+  gap: clamp(.9rem, 1.6vmin, 1.6rem);
+  width: 66%;
   /* max-width: 800px; */
+}
+
+#screen-categories.screen-categories--four .cat-main {
+  overflow: hidden;
+  justify-content: center;
+  padding: clamp(.7rem, 1.2vmin, 1.2rem) clamp(1rem, 1.8vmin, 2rem) clamp(1.2rem, 1.8vmin, 1.8rem);
+}
+
+#screen-categories.screen-categories--four .cat-grid {
+  margin-top: 0;
+}
+
+#screen-categories.screen-categories--four #btn-random {
+  position: fixed;
+  right: clamp(.8rem, 1.6vmin, 1.8rem);
+  bottom: clamp(2.8rem, 4vmin, 4rem);
+  margin-top: 0;
+  margin-right: 0;
+  z-index: 5;
+}
+
+#screen-categories.screen-categories--all:not(.screen-categories--four) #btn-random {
+  position: fixed;
+  right: clamp(.8rem, 1.6vmin, 1.8rem);
+  bottom: clamp(2.8rem, 4vmin, 4rem);
+  z-index: 5;
+}
+
+#screen-categories.screen-categories--all:not(.screen-categories--four) .cat-main {
+  padding: clamp(5rem, 7.2vmin, 7.6rem) clamp(1rem, 1.8vmin, 2rem) clamp(3.2rem, 4.8vmin, 5rem);
+}
+
+#btn-random .btn-icon i {
+  font-size: 1.45em;
+  line-height: 1;
+}
+
+#btn-random .btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(0.04em);
 }
 
 /* 
@@ -143,25 +214,28 @@
   box-shadow: 0 4px 16px rgba(0,0,0,.1);
   cursor: pointer;
   transition: transform var(--transition);
-  padding-top: 1rem;
+  aspect-ratio: 1 / 1;
+  padding: clamp(.95rem, 1.6vmin, 1.6rem);
+  gap: clamp(.6rem, 1vmin, 1rem);
 }
 
 .puzzle-card:hover { transform: scale(1.02); }
 
 .puzzle-card__img {
-  width: 90%;
-  aspect-ratio: 4/3;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
   background-size: cover;
   background-position: center;
-  border-radius: 2rem;
-  margin: 0 auto;
+  border-radius: 1.4rem;
+  margin: 0;
 }
 
 .puzzle-card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2rem;
+  padding: clamp(.15rem, .4vmin, .4rem) .2rem 0;
 }
 
 .puzzle-card__title {
@@ -179,24 +253,6 @@
   text-transform: uppercase;
   cursor: pointer;
   border: none;
-}
-
-/* BACKGROUND LOGO STYLING */
-.bg-logo {
-  width: 30%;
-  position: absolute;
-  opacity: 50%;
-  margin-right: 50rem;
-  rotate: -65deg;
-  margin-top: 50rem;
-}
-
-.bg2-logo {
-  position: absolute;
-  opacity: 50%;
-  margin-left: 100rem;
-  rotate: 80deg;
-  margin-top: -10rem;
 }
 
 .movie-bg {
