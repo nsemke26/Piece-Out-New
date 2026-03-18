@@ -54,15 +54,15 @@ const CATEGORIES = [
 // The full puzzle database
 const PUZZLES = [
   // Landscapes
-  { id:'land-1', title:'Mountain Sunrise',  description:'A breathtaking view of the sun rising over snow-capped mountain peaks.',                 category:'landscapes', image: IMG },
-  { id:'land-2', title:'Ocean Sunset',      description:'Golden hour at the beach with waves crashing along the shore.',                          category:'landscapes', image: IMG },
-  { id:'land-3', title:'Forest Trail',      description:'A winding path through an ancient moss-covered forest.',                                 category:'landscapes', image: IMG },
-  { id:'land-4', title:'Desert Dunes',      description:'Rolling sand dunes stretching endlessly across a vast desert landscape.',                category:'landscapes', image: IMG },
+  { id:'land-1', title:'Mountain Sunrise',  description:'A breathtaking view of the sun rising over snow-capped mountain peaks.',                 category:'landscapes', image: "images/landscape-1.jpg" },
+  { id:'land-2', title:'Ocean Sunset',      description:'Golden hour at the beach with waves crashing along the shore.',                          category:'landscapes', image: "images/landscape-2.jpg" },
+  { id:'land-3', title:'Forest Trail',      description:'A winding path through an ancient moss-covered forest.',                                 category:'landscapes', image: "images/landscape-3.jpg" },
+  { id:'land-4', title:'Desert Dunes',      description:'Rolling sand dunes stretching endlessly across a vast desert landscape.',                category:'landscapes', image: "images/landscape-4.jpg" },
   // Movies
-  { id:'movie-1', title:'Space Odyssey',    description:'An epic journey through the cosmos and beyond the stars.',                               category:'movies', image: IMG },
-  { id:'movie-2', title:'Noir Detective',   description:'A classic mystery set in the city that never sleeps.',                                   category:'movies', image: IMG },
-  { id:'movie-3', title:'Robot Uprising',   description:'When machines gain consciousness, humanity faces its greatest challenge.',                category:'movies', image: IMG },
-  { id:'movie-4', title:'Underwater World', description:'A deep-sea adventure exploring the mysteries of the ocean floor.',                       category:'movies', image: IMG },
+  { id:'movie-1', title:'Space Odyssey',    description:'Kung Fu Panda movie with the panda.',                          category:'movies', image: "images/kung_fu_panda.jpg" },
+  { id:'movie-2', title:'Noir Detective',   description:'Rataouille Movie with the rat and cook.',                      category:'movies', image: "images/rataouille.jpg" },
+  { id:'movie-3', title:'Robot Uprising',   description:'Shrek movie image with all the characters.',                   category:'movies', image: "images/shrek.jpg" },
+  { id:'movie-4', title:'Underwater World', description:'Despicable Me movie with minons image.',                       category:'movies', image: "images/despicable.jpg" },
   // Animals
   { id:'anim-1', title:'Arctic Fox',        description:'The elegant white fox navigating through the frozen tundra.',                            category:'animals', image: IMG },
   { id:'anim-2', title:'Tropical Parrot',   description:'A vibrant macaw perched on a branch in the lush rainforest.',                            category:'animals', image: IMG },
