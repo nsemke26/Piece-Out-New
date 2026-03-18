@@ -120,10 +120,9 @@
     ========================================================================== 
   -->
     <div id="screen-game" class="screen">
+      
       <div class="game-header">
-        <button id="btn-back" class="btn btn--purple btn--sm">
-          &larr; BACK
-        </button>
+
         <h2 class="game-header__title">SLIDE PIECES IN PLACE</h2>
         <div id="game-timer" class="game-timer">&#9201; 0:00</div>
       </div>
@@ -132,8 +131,13 @@
         <div id="puzzle-grid" class="puzzle-grid"></div>
       </div>
       <div class="game-footer">
-        <button id="btn-reset" class="btn btn--purple">&#8635; RESET</button>
-        <button id="btn-help" class="btn btn--blue">&#9432; HELP</button>
+        <button id="btn-back" class="btn btn--orange">
+          &larr; BACK
+        </button>
+        <div class="game-footer__center">
+          <button id="btn-reset" class="btn btn--purple">&#8635; RESET</button>
+          <button id="btn-help" class="btn btn--blue">&#9432; HELP</button>
+        </div>
         <!-- Debug tool for development testing -->
         <button
           id="btn-debug-solve"
@@ -143,6 +147,8 @@
           &#128027;
         </button>
       </div>
+      <img src="images/background-logo.svg" alt="" class="background-logo">
+      <img src="images/background-logo.svg" alt="" class="background-logo-2">
     </div>
 
     <!-- 
