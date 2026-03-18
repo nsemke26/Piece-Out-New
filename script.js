@@ -43,36 +43,36 @@ const IMG = './images/joaquin.png';    // Placeholder image used across the demo
 
 // Defined categories for the sidebar navigation
 const CATEGORIES = [
-  { id: 'landscapes', name: 'Landscapes',        icon: '\u{1F3D4}' },
-  { id: 'movies',     name: 'Movies',            icon: '\u{1F3AC}' },
-  { id: 'animals',    name: 'Animals',            icon: '\u{1F43E}' },
-  { id: 'all',        name: 'All',                icon: '\u{1F9E9}' },
-  { id: 'food',       name: 'Food',               icon: '\u{1F374}' },
-  { id: 'indigenous', name: 'Indigenous Art',  icon: '\u{1F3A8}' },
+  { id: 'landscapes', name: 'Landscapes',        icon: 'ph-fill ph-mountains' },
+  { id: 'movies',     name: 'Movies',            icon: 'ph-fill ph-film-slate' },
+  { id: 'animals',    name: 'Animals',            icon: 'ph-fill ph-paw-print' },
+  { id: 'all',        name: 'All',                icon: 'ph-fill ph-puzzle-piece' },
+  { id: 'food',       name: 'Food',               icon: 'ph-fill ph-hamburger' },
+  { id: 'indigenous', name: 'Indigenous Art',  icon: 'ph-fill ph-palette' },
 ];
 
 // The full puzzle database
 const PUZZLES = [
   // Landscapes
-  { id:'land-1', title:'Mountain Sunrise',  description:'A breathtaking view of the sun rising over snow-capped mountain peaks.',                 category:'landscapes', image: "images/landscape-1.jpg" },
-  { id:'land-2', title:'Ocean Sunset',      description:'Golden hour at the beach with waves crashing along the shore.',                          category:'landscapes', image: "images/landscape-2.jpg" },
-  { id:'land-3', title:'Forest Trail',      description:'A winding path through an ancient moss-covered forest.',                                 category:'landscapes', image: "images/landscape-3.jpg" },
-  { id:'land-4', title:'Desert Dunes',      description:'Rolling sand dunes stretching endlessly across a vast desert landscape.',                category:'landscapes', image: "images/landscape-4.jpg" },
+  { id:'land-1', title:'Royal Canadian Mint',             description:'An iconic view of the Royal Canadian Mint, known for producing circulation and collector coins.', category:'landscapes', image: "images/landscape-1.jpg" },
+  { id:'land-2', title:'Exchange District',               description:'Historic warehouse architecture and vibrant streets from Winnipeg’s Exchange District.', category:'landscapes', image: "images/landscape-2.jpg" },
+  { id:'land-3', title:'St Boniface Cathedral',           description:'The remarkable facade and grounds of St Boniface Cathedral, a major historic landmark.', category:'landscapes', image: "images/landscape-3.jpg" },
+  { id:'land-4', title:'Canadian Museum of Human Rights', description:'The striking modern design of the Canadian Museum for Human Rights in downtown Winnipeg.', category:'landscapes', image: "images/landscape-4.jpg" },
   // Movies
-  { id:'movie-1', title:'Space Odyssey',    description:'Kung Fu Panda movie with the panda.',                          category:'movies', image: "images/kung_fu_panda.jpg" },
-  { id:'movie-2', title:'Noir Detective',   description:'Rataouille Movie with the rat and cook.',                      category:'movies', image: "images/rataouille.jpg" },
-  { id:'movie-3', title:'Robot Uprising',   description:'Shrek movie image with all the characters.',                   category:'movies', image: "images/shrek.jpg" },
-  { id:'movie-4', title:'Underwater World', description:'Despicable Me movie with minons image.',                       category:'movies', image: "images/despicable.jpg" },
+  { id:'movie-1', title:'Kung Fu Panda',   description:'Po trains under Master Shifu and the Furious Five to become the Dragon Warrior.', category:'movies', image: "images/kung_fu_panda.jpg" },
+  { id:'movie-2', title:'Ratatouille',     description:'Remy, a rat with a passion for cooking, helps create unforgettable dishes in Paris.',   category:'movies', image: "images/rataouille.jpg" },
+  { id:'movie-3', title:'Shrek',           description:'Shrek and Donkey set out on a hilarious adventure through a fairy-tale world.',         category:'movies', image: "images/shrek.jpg" },
+  { id:'movie-4', title:'Despicable Me',   description:'Gru and his mischievous Minions pull off wild schemes that turn into family moments.',    category:'movies', image: "images/despicable.jpg" },
   // Animals
   { id:'anim-1', title:'Arctic Fox',        description:'The elegant white fox navigating through the frozen tundra.',                            category:'animals', image: IMG },
   { id:'anim-2', title:'Tropical Parrot',   description:'A vibrant macaw perched on a branch in the lush rainforest.',                            category:'animals', image: IMG },
   { id:'anim-3', title:'Ocean Dolphin',     description:'Playful dolphins leaping through crystal clear tropical waters.',                        category:'animals', image: IMG },
   { id:'anim-4', title:'Safari Lion',       description:'The king of the savannah resting under an acacia tree at dusk.',                        category:'animals', image: IMG },
   // Food
-  { id:'food-1', title:'Sushi Platter',     description:'An artfully arranged selection of fresh nigiri and maki rolls.',                         category:'food', image: IMG },
-  { id:'food-2', title:'Pizza Perfection',  description:'A wood-fired margherita fresh from a Neapolitan oven.',                                  category:'food', image: IMG },
-  { id:'food-3', title:'Berry Dessert',     description:'A tower of berries, cream, and chocolate almost too pretty to eat.',                     category:'food', image: IMG },
-  { id:'food-4', title:'Street Tacos',      description:'Authentic Mexican street tacos loaded with all the fixings.',                            category:'food', image: IMG },
+  { id:'food-1', title:'Pizza Perfection',  description:'A golden, cheesy pizza with fresh toppings and a perfectly crisp crust.',                 category:'food', image: "images/food-1-pizza.jpg" },
+  { id:'food-2', title:'Sushi Platter',     description:'A colorful assortment of sushi rolls and nigiri, neatly arranged and ready to serve.',   category:'food', image: "images/food-2-sushi.jpg" },
+  { id:'food-3', title:'Street Tacos',      description:'Fresh street-style tacos packed with vibrant fillings, herbs, and bold flavors.',         category:'food', image: "images/food-3-tacos.jpg" },
+  { id:'food-4', title:'Caesar Salad',      description:'A crisp Caesar salad with romaine, parmesan, croutons, and creamy dressing.',            category:'food', image: "images/food-4-caesar-salad.jpg" },
   // Indigenous Art
   { id:'art-1', title:'Dreamtime Stories',  description:'Aboriginal art depicting the ancient creation stories of the land.',                     category:'indigenous', image: IMG },
   { id:'art-2', title:'Totem Spirits',      description:'Traditional totem carvings representing clan histories and legends.',                    category:'indigenous', image: IMG },
@@ -136,6 +136,7 @@ function cacheDom() {
   dom.btnGuest       = $('#btn-guest');
   dom.catScreen      = $('#screen-categories');
   dom.catSidebar     = $('#cat-sidebar');
+  dom.catMain        = $('.cat-main');
   dom.catGrid        = $('#cat-grid');
   dom.btnRandom      = $('#btn-random');
 
@@ -367,7 +368,12 @@ function renderSidebar() {
   CATEGORIES.forEach(cat => {
     const btn = document.createElement('button');
     btn.className = 'cat-btn' + (cat.id === state.selectedCategory ? ' active' : '');
-    btn.innerHTML = `<span class="cat-btn__icon">${cat.icon}</span> ${cat.name}`;
+    const iconMarkup = cat.iconClass
+      ? `<i class="${cat.iconClass}" aria-hidden="true"></i>`
+      : (typeof cat.icon === 'string' && cat.icon.includes('ph-'))
+        ? `<i class="${cat.icon}" aria-hidden="true"></i>`
+        : cat.icon;
+    btn.innerHTML = `<span class="cat-btn__icon">${iconMarkup}</span> ${cat.name}`;
     btn.addEventListener('click', () => {
       state.selectedCategory = cat.id;
       renderCategories();
@@ -378,6 +384,9 @@ function renderSidebar() {
 
 function renderCategoryGrid(catId) {
   const puzzles = puzzlesForCategory(catId);
+  dom.catScreen.classList.toggle('screen-categories--four', puzzles.length === 4);
+  dom.catScreen.classList.toggle('screen-categories--all', catId === 'all');
+  if (catId === 'all' && dom.catMain) dom.catMain.scrollTop = 0;
   dom.catGrid.innerHTML = '';
   puzzles.forEach(pz => {
     const card = document.createElement('div');
