@@ -13,19 +13,44 @@
 }
 
 @keyframes lbSlideInLeft {
-  from { opacity: 0; transform: translateX(-36px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes lbSlideInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes lbPopIn {
-  0%   { opacity: 0; transform: scale(0.96); }
-  70%  { opacity: 1; transform: scale(1.015); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.015);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .lb-container {
@@ -59,10 +84,10 @@
   background: #8176de;
   display: flex;
   flex-direction: column;
-  padding: clamp(20px, 4vmin, 40px);
-  gap: clamp(15px, 3vmin, 30px);
+  padding: clamp(20px, 4.5vmin, 100px);
+  gap: clamp(15px, 3.5vmin, 65px);
   color: #fff;
-  box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 }
 
@@ -75,11 +100,12 @@
   width: 100%;
   max-height: 50%;
   aspect-ratio: 1;
-  border: 4px solid #fff;
-  border-radius: 40px;
+  border: clamp(4px, 0.4vw, 12px) solid #fff;
+  border-radius: clamp(24px, 4vw, 120px);
   overflow: hidden;
   flex-shrink: 0;
-  corner-shape: squircle; /* Aesthetic hint for supported browsers */
+  corner-shape: squircle;
+  /* Aesthetic hint for supported browsers */
 }
 
 .lb-image {
@@ -98,7 +124,7 @@
 }
 
 .lb-title {
-  font-size: clamp(1.8rem, 3.5vw, 3.5rem);
+  font-size: clamp(1.8rem, 3.8vw, 6rem);
   text-transform: uppercase;
   font-weight: 900;
   line-height: 1.1;
@@ -106,7 +132,7 @@
 }
 
 .lb-desc {
-  font-size: clamp(0.8rem, 1.2vw, 1.4rem);
+  font-size: clamp(0.9rem, 1.4vw, 2.6rem);
   font-weight: 300;
   line-height: 1.4;
   color: #fff;
@@ -126,7 +152,7 @@
   flex-direction: column;
   padding: 7vh 7vw;
   padding-left: 3vw;
-  gap: clamp(15px, 3vmin, 25px);
+  gap: clamp(18px, 3.5vmin, 65px);
   position: relative;
   overflow: hidden;
 }
@@ -148,7 +174,7 @@
 }
 
 .lb-heading {
-  font-size: clamp(2.5rem, 5vw, 6.5rem);
+  font-size: clamp(2.4rem, 4.8vw, 8rem);
   color: #8176de;
   text-transform: uppercase;
   font-weight: 900;
@@ -162,7 +188,7 @@
 }
 
 .lb-trophy-icon {
-  font-size: clamp(40px, 4vw, 80px);
+  font-size: clamp(2.4rem, 4.8vw, 8rem);
   line-height: 1;
   color: #8176de;
   display: inline-flex;
@@ -171,7 +197,7 @@
 }
 
 .lb-sub {
-  font-size: clamp(0.8rem, 1.2vw, 1.6rem);
+  font-size: clamp(0.9rem, 1.4vw, 3rem);
   color: #78716c;
   text-transform: uppercase;
   font-weight: 400;
@@ -190,9 +216,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: clamp(15px, 2.2vmin, 35px);
   z-index: 1;
-  max-width: 1000px;
+  max-width: 2200px;
 }
 
 .lb-table {
@@ -200,7 +226,7 @@
   border-collapse: separate;
   border-spacing: 0 0;
   border: none;
-  border-radius: 40px;
+  border-radius: clamp(18px, 1.8vw, 55px);
   overflow: hidden;
   background: #fff;
 }
@@ -215,28 +241,49 @@
   animation: lbSlideInUp 300ms ease-out forwards;
 }
 
-#screen-leaderboard.active .lb-table tbody tr:nth-child(1) { animation-delay: 220ms; }
-#screen-leaderboard.active .lb-table tbody tr:nth-child(2) { animation-delay: 280ms; }
-#screen-leaderboard.active .lb-table tbody tr:nth-child(3) { animation-delay: 340ms; }
-#screen-leaderboard.active .lb-table tbody tr:nth-child(4) { animation-delay: 400ms; }
-#screen-leaderboard.active .lb-table tbody tr:nth-child(5) { animation-delay: 460ms; }
+#screen-leaderboard.active .lb-table tbody tr:nth-child(1) {
+  animation-delay: 220ms;
+}
+
+#screen-leaderboard.active .lb-table tbody tr:nth-child(2) {
+  animation-delay: 280ms;
+}
+
+#screen-leaderboard.active .lb-table tbody tr:nth-child(3) {
+  animation-delay: 340ms;
+}
+
+#screen-leaderboard.active .lb-table tbody tr:nth-child(4) {
+  animation-delay: 400ms;
+}
+
+#screen-leaderboard.active .lb-table tbody tr:nth-child(5) {
+  animation-delay: 460ms;
+}
 
 /* Table Headers */
 .lb-table thead th {
   background: var(--orange);
   color: #fff;
-  padding: clamp(10px, 1.5vmin, 15px) clamp(15px, 2.5vmin, 25px);
-  font-size: clamp(0.9rem, 1.5vw, 2rem);
+  padding: clamp(12px, 1.8vmin, 35px) clamp(18px, 2.8vmin, 50px);
+  font-size: clamp(1.1rem, 1.8vw, 3.5rem);
   font-weight: 900;
   text-align: left;
 }
 
 /* Row Styling */
 .lb-table tbody td {
-  padding: clamp(10px, 1.5vmin, 15px) clamp(15px, 2.5vmin, 25px);
-  font-size: clamp(1rem, 1.8vw, 2.5rem);
+  padding: clamp(12px, 1.8vmin, 35px) clamp(18px, 2.8vmin, 50px);
+  font-size: clamp(1.1rem, 2vw, 4rem);
   color: #78716c;
+  font-weight: 700;
   border-top: none;
+  border-bottom: clamp(2px, 0.2vw, 6px) solid #d6d3d1;
+}
+
+/* Remove border from the very last row */
+.lb-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 /* 
@@ -248,27 +295,32 @@
   background: var(--orange);
   color: #fff;
   border-radius: 9999px;
-  padding: clamp(10px, 1.5vmin, 15px) clamp(15px, 2.5vmin, 25px);
+  padding: clamp(12px, 1.8vmin, 35px) clamp(18px, 2.8vmin, 50px);
   display: flex;
-  justify-content: space-between;
-  font-size: clamp(1.2rem, 2vw, 3rem);
+  font-size: clamp(1.3rem, 2.2vw, 4.5rem);
   font-weight: 900;
   margin-top: 5px;
   box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
 }
 
-#screen-leaderboard.active .lb-you {
-  animation: lbPopIn 340ms ease-out both;
-  animation-delay: 420ms;
+/* Column Width Consistency */
+.col-rank {
+  width: 15%;
 }
 
-.lb-you span { display: flex; align-items: center; }
+.col-player {
+  width: 45%;
+}
 
-/* Column Width Consistency */
-.col-rank   { width: 15%; }
-.col-player { width: 45%; }
-.col-time   { width: 25%; text-align: right; }
-.col-moves  { width: 15%; text-align: right; }
+.col-time {
+  width: 25%;
+  text-align: right;
+}
+
+.col-moves {
+  width: 15%;
+  text-align: right;
+}
 
 /* 
    --------------------------------------------------------------------------
@@ -278,6 +330,7 @@
 */
 .lb-actions {
   display: flex;
+  justify-content: center;
   gap: clamp(10px, 1.5vw, 20px);
   margin-top: auto;
   z-index: 1;
@@ -289,6 +342,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   #screen-leaderboard.active .lb-info-panel,
   #screen-leaderboard.active .lb-main-panel,
   #screen-leaderboard.active .lb-heading,
@@ -306,29 +360,49 @@
 .btn-restart {
   background: var(--orange);
   color: #fff;
-  padding: 8px 20px;
-  border: 3px solid #c2410c;
+  padding: clamp(10px, 1.2vw, 20px) clamp(24px, 2.5vw, 50px);
+  border: clamp(3px, 0.3vw, 8px) solid #c2410c;
   border-radius: 9999px;
-  font-size: clamp(0.9rem, 1.2vw, 1.8rem);
-  box-shadow: 0 6px 0 #c2410c;
+  font-size: clamp(1.1rem, 1.8vw, 3rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: 0 clamp(6px, 0.5vw, 16px) 0 #c2410c;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: transform 0.1s;
+  justify-content: center;
+  gap: clamp(8px, 1.2vw, 20px);
+  transition: transform 0.05s ease-out, box-shadow 0.05s ease-out;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-restart:active {
+  transform: translateY(clamp(6px, 0.5vw, 16px));
+  box-shadow: 0 0 0 transparent;
 }
 
 .btn-home {
   background: #fff;
   color: #f97316;
-  padding: 8px 20px;
-  border: 3px solid #f97316;
+  padding: clamp(10px, 1.2vw, 20px) clamp(24px, 2.5vw, 50px);
+  border: clamp(3px, 0.3vw, 8px) solid #f97316;
   border-radius: 9999px;
-  font-size: clamp(0.9rem, 1.2vw, 1.8rem);
-  box-shadow: 0 6px 0 #f97316;
+  font-size: clamp(1.1rem, 1.8vw, 3rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: 0 clamp(6px, 0.5vw, 16px) 0 #f97316;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: transform 0.1s;
+  justify-content: center;
+  gap: clamp(8px, 1.2vw, 20px);
+  transition: transform 0.05s ease-out, box-shadow 0.05s ease-out;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-home:active {
+  transform: translateY(clamp(6px, 0.5vw, 16px));
+  box-shadow: 0 0 0 transparent;
 }
 
 .btn-svg-icon {
