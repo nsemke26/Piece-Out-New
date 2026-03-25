@@ -118,6 +118,7 @@ input  { font-family: var(--font); outline: none; border: none; }
    -------------------------------------------------------------------------- 
 */
 .btn {
+  --btn-shadow-depth: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -139,20 +140,20 @@ input  { font-family: var(--font); outline: none; border: none; }
 .btn-icon { font-size: .85em; }
 
 /* Color Variants */
-.btn--orange      { background: var(--orange);  box-shadow: 0 6px 0 var(--orange-dark); }
-.btn--orange:active { box-shadow: 0 2px 0 var(--orange-dark); }
+.btn--orange      { --btn-shadow-color: var(--orange-dark); background: var(--orange);  box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color); }
+.btn--orange:active { box-shadow: 0 2px 0 var(--btn-shadow-color); }
 
-.btn--purple      { background: var(--purple);  box-shadow: 0 6px 0 #4F478F; }
-.btn--purple:active { box-shadow: 0 2px 0 #4F478F; }
+.btn--purple      { --btn-shadow-color: #4F478F; background: var(--purple);  box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color); }
+.btn--purple:active { box-shadow: 0 2px 0 var(--btn-shadow-color); }
 
-.btn--blue        { background: var(--blue);    box-shadow: 0 6px 0 #0284c7; }
-.btn--blue:active { box-shadow: 0 2px 0 #0284c7; }
+.btn--blue        { --btn-shadow-color: #0284c7; background: var(--blue);    box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color); }
+.btn--blue:active { box-shadow: 0 2px 0 var(--btn-shadow-color); }
 
-.btn--red         { background: var(--red);     box-shadow: 0 6px 0 #b91c1c; }
-.btn--red:active  { box-shadow: 0 2px 0 #b91c1c; }
+.btn--red         { --btn-shadow-color: #b91c1c; background: var(--red);     box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color); }
+.btn--red:active  { box-shadow: 0 2px 0 var(--btn-shadow-color); }
 
-.btn--dark        { background: var(--orange);    box-shadow: 0 6px 0 var(--orange-dark); }
-.btn--dark:active { box-shadow: 0 2px 0 #111; }
+.btn--dark        { --btn-shadow-color: #111; background: var(--orange); box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color); }
+.btn--dark:active { box-shadow: 0 2px 0 var(--btn-shadow-color); }
 
 /* Size Modifiers */
 .btn--xl   { font-size: clamp(1.6rem, 3.5vmin, 3.2rem); padding: .7em 2.2em; }

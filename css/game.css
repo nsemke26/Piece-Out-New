@@ -3,11 +3,71 @@
    Styles for the active puzzle board, timer, and in-game controls.
    ========================================================================== */
 
+@property --tile-feedback-x {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --tile-feedback-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --tile-reward-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tile-complete-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tile-intro-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --tile-intro-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tile-intro-cover-opacity {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 #screen-game { 
   --game-screen-pad: clamp(.6rem, 1.5vmin, 2rem);
   --game-board-width: min(50rem, 70vh, calc(100vw - (var(--game-screen-pad) * 2)));
+  --tactile-soft-ease: cubic-bezier(.22, .84, .32, 1);
+  --tactile-spring-ease: cubic-bezier(.18, .9, .24, 1.18);
+  --tile-move-duration: 170ms;
+  --tile-press-duration: 120ms;
+  --tile-invalid-duration: 190ms;
+  --tile-correct-duration: 260ms;
+  --timer-tick-duration: 220ms;
+  --timer-complete-duration: 520ms;
+  --board-progress-duration: 240ms;
+  --board-complete-duration: 620ms;
+  --tile-complete-duration: 340ms;
+  --particle-complete-duration: 940ms;
+  --btn-bounce-duration: 180ms;
   justify-content: space-between; 
   padding: var(--game-screen-pad); 
+}
+
+body.has-gsap-intro #screen-game.active,
+body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.background-logo-2):not(.hint-pill) {
+  animation: none;
 }
 
 /* 
@@ -42,9 +102,54 @@
 
 .game-timer {
   /* font-size: clamp(1.2rem, 2.6vmin, 8rem); */
+  display: inline-block;
   font-size: 10vh;
   color: var(--orange);
   font-weight: 400;
+  transform-origin: center right;
+  will-change: transform, filter;
+}
+
+.game-timer.is-ticking {
+  animation: timerTickPulse var(--timer-tick-duration) var(--tactile-spring-ease);
+}
+
+.game-timer.is-complete {
+  animation: timerCompleteAccent var(--timer-complete-duration) var(--tactile-spring-ease);
+}
+
+@keyframes timerTickPulse {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+  42% {
+    transform: translateY(-1px) scale(1.035);
+    filter: brightness(1.06);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes timerCompleteAccent {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: translateY(-3px) scale(1.12);
+    filter: brightness(1.15);
+  }
+  64% {
+    transform: translateY(1px) scale(.99);
+    filter: brightness(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
 }
 
 /* 
@@ -64,6 +169,71 @@
   width: 100%;
 }
 
+.complete-particles {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--game-board-width);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.complete-particle {
+  --particle-width: 16px;
+  --particle-height: 16px;
+  --particle-left: 50%;
+  --particle-top: 50%;
+  --particle-x: 0px;
+  --particle-y: -36px;
+  --particle-rotate-start: -8deg;
+  --particle-rotate-end: 12deg;
+  position: absolute;
+  left: var(--particle-left);
+  top: var(--particle-top);
+  width: var(--particle-width);
+  height: var(--particle-height);
+  border-radius: 24%;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 14px 32px rgba(129, 118, 222, .22);
+  opacity: 0;
+  transform: translate3d(0, 0, 0) rotate(var(--particle-rotate-start)) scale(.58);
+  animation: completeParticleFloat var(--particle-complete-duration) var(--tactile-soft-ease) forwards;
+}
+
+.complete-particle--square {
+  border-radius: 18%;
+}
+
+.complete-particle--rect {
+  border-radius: 8px;
+}
+
+.complete-particle--squircle {
+  border-radius: 30%;
+}
+
+@keyframes completeParticleFloat {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(var(--particle-rotate-start)) scale(.54);
+  }
+  12% {
+    opacity: .98;
+    transform: translate3d(calc(var(--particle-x) * .12), calc(var(--particle-y) * .12), 0) rotate(calc((var(--particle-rotate-start) + var(--particle-rotate-end)) / 2)) scale(1.16);
+  }
+  32% {
+    opacity: .94;
+    transform: translate3d(calc(var(--particle-x) * .42), calc(var(--particle-y) * .42), 0) rotate(calc((var(--particle-rotate-start) + var(--particle-rotate-end)) / 2)) scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--particle-x), var(--particle-y), 0) rotate(var(--particle-rotate-end)) scale(1.18);
+  }
+}
+
 .puzzle-grid {
   position: relative;
   width: var(--game-board-width);
@@ -72,6 +242,62 @@
   border-radius: 1.5rem;
   overflow: hidden;
   touch-action: none; /* Crucial for custom drag logic on touch devices */
+  will-change: transform, box-shadow, filter;
+  z-index: 2;
+}
+
+.puzzle-grid.is-progressing {
+  animation: boardProgressPulse var(--board-progress-duration) var(--tactile-soft-ease);
+}
+
+.puzzle-grid.is-completing {
+  animation: boardCompletePulse var(--board-complete-duration) var(--tactile-spring-ease) both;
+}
+
+.puzzle-grid.is-complete-rest {
+  box-shadow: 0 22px 52px rgba(129, 118, 222, .26);
+  filter: brightness(1.045) saturate(1.04);
+}
+
+@keyframes boardProgressPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(129, 118, 222, 0);
+    filter: brightness(1);
+  }
+  45% {
+    transform: scale(1.004);
+    box-shadow: 0 12px 28px rgba(129, 118, 222, .16);
+    filter: brightness(1.03);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(129, 118, 222, 0);
+    filter: brightness(1);
+  }
+}
+
+@keyframes boardCompletePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(129, 118, 222, 0);
+    filter: brightness(1);
+  }
+  34% {
+    transform: scale(1.034);
+    box-shadow: 0 30px 68px rgba(129, 118, 222, .3);
+    filter: brightness(1.11);
+  }
+  68% {
+    transform: scale(1.014);
+    box-shadow: 0 24px 58px rgba(129, 118, 222, .26);
+    filter: brightness(1.06);
+  }
+  100% {
+    transform: scale(1.01);
+    box-shadow: 0 22px 52px rgba(129, 118, 222, .26);
+    filter: brightness(1.045);
+  }
 }
 
 /* 
@@ -82,6 +308,19 @@
    -------------------------------------------------------------------------- 
 */
 .puzzle-tile {
+  --tile-x: 0%;
+  --tile-y: 0%;
+  --tile-drag-x: 0px;
+  --tile-drag-y: 0px;
+  --tile-feedback-x: 0px;
+  --tile-feedback-y: 0px;
+  --tile-reward-scale: 1;
+  --tile-complete-scale: 1;
+  --tile-intro-y: 0px;
+  --tile-intro-scale: 1;
+  --tile-intro-cover-opacity: 0;
+  --tile-scale-x: 1;
+  --tile-scale-y: 1;
   position: absolute;
   width: 25%;
   height: 25%;
@@ -89,19 +328,119 @@
   border: 0.25rem solid var(--purple-light);
   border-radius: 1.5rem;
   cursor: grab;
-  /* Smooth transitions for taps and snaps */
-  transition: transform .14s ease;
-  will-change: transform;
+  overflow: hidden;
+  transform:
+    translate(var(--tile-x), var(--tile-y))
+    translate(var(--tile-drag-x), var(--tile-drag-y))
+    translate(var(--tile-feedback-x), var(--tile-feedback-y))
+    translateY(var(--tile-intro-y))
+    scale(var(--tile-scale-x), var(--tile-scale-y))
+    scale(var(--tile-intro-scale))
+    scale(var(--tile-reward-scale))
+    scale(var(--tile-complete-scale));
+  transform-origin: center;
+  transition:
+    transform var(--tile-move-duration) var(--tactile-spring-ease),
+    box-shadow var(--tile-press-duration) var(--tactile-soft-ease),
+    filter var(--tile-press-duration) var(--tactile-soft-ease);
+  will-change: transform, box-shadow;
+  backface-visibility: hidden;
+  box-shadow: 0 12px 24px rgba(65, 42, 120, .18);
   z-index: 1;
 }
 
+.puzzle-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, 0) 36%),
+    rgba(146, 117, 211, .94);
+  opacity: var(--tile-intro-cover-opacity);
+}
+
+.puzzle-tile.is-intro-animating {
+  transition:
+    box-shadow var(--tile-press-duration) var(--tactile-soft-ease),
+    filter var(--tile-press-duration) var(--tactile-soft-ease);
+}
+
 .puzzle-tile:active { cursor: grabbing; }
+
+.puzzle-tile.is-pressed {
+  --tile-scale-x: .972;
+  --tile-scale-y: .944;
+  box-shadow: 0 7px 16px rgba(65, 42, 120, .14);
+  filter: brightness(.98) saturate(.98);
+}
 
 /* Styles applied while dragging a tile */
 .puzzle-tile.dragging {
   transition: none; /* Disables transition so tile follows pointer instantly */
   z-index: 10;
-  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  box-shadow: 0 16px 28px rgba(32, 18, 64, .22);
+}
+
+.puzzle-tile.is-invalid {
+  animation: tileInvalidNudge var(--tile-invalid-duration) var(--tactile-soft-ease);
+}
+
+.puzzle-tile.is-correct {
+  animation: tileCorrectReward var(--tile-correct-duration) var(--tactile-spring-ease);
+}
+
+.puzzle-tile.is-complete-settle {
+  animation: tileCompleteSettle var(--tile-complete-duration) var(--tactile-spring-ease);
+}
+
+@keyframes tileInvalidNudge {
+  0%   { --tile-feedback-x: 0px; }
+  35%  { --tile-feedback-x: 7px; }
+  62%  { --tile-feedback-x: -5px; }
+  100% { --tile-feedback-x: 0px; }
+}
+
+@keyframes tileCorrectReward {
+  0% {
+    --tile-reward-scale: 1;
+    box-shadow: 0 12px 24px rgba(65, 42, 120, .18);
+    filter: brightness(1);
+  }
+  42% {
+    --tile-reward-scale: 1.05;
+    box-shadow: 0 16px 28px rgba(255, 222, 45, .24);
+    filter: brightness(1.06);
+  }
+  100% {
+    --tile-reward-scale: 1;
+    box-shadow: 0 12px 24px rgba(65, 42, 120, .18);
+    filter: brightness(1);
+  }
+}
+
+@keyframes tileCompleteSettle {
+  0% {
+    --tile-complete-scale: 1;
+    box-shadow: 0 12px 24px rgba(65, 42, 120, .18);
+    filter: brightness(1);
+  }
+  38% {
+    --tile-complete-scale: 1.055;
+    box-shadow: 0 18px 32px rgba(255, 222, 45, .22);
+    filter: brightness(1.07);
+  }
+  68% {
+    --tile-complete-scale: 1.012;
+    box-shadow: 0 15px 28px rgba(255, 222, 45, .18);
+    filter: brightness(1.03);
+  }
+  100% {
+    --tile-complete-scale: 1;
+    box-shadow: 0 12px 24px rgba(65, 42, 120, .18);
+    filter: brightness(1);
+  }
 }
 
 /* 
@@ -134,6 +473,23 @@
 
 .game-footer > #btn-back {
   justify-self: start;
+}
+
+#screen-game .btn {
+  transition:
+    transform var(--btn-bounce-duration) var(--tactile-spring-ease),
+    box-shadow var(--btn-bounce-duration) var(--tactile-soft-ease);
+  box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color);
+}
+
+#screen-game .btn:active {
+  transform: none;
+  box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color);
+}
+
+#screen-game .btn.is-pressed {
+  --btn-shadow-depth: 2px;
+  transform: translateY(2px) scale(.968, .948);
 }
 
 /* Hidden debug button for testing the completion flow */
@@ -172,4 +528,30 @@
   height: 50%;
   transform: rotate(180deg);
   opacity: .5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #screen-game .puzzle-tile,
+  #screen-game .btn {
+    transition-duration: .01ms !important;
+  }
+
+  #screen-game .puzzle-tile.is-invalid {
+    animation: none !important;
+  }
+
+  #screen-game .puzzle-tile.is-correct,
+  #screen-game .puzzle-tile.is-complete-settle,
+  #screen-game .game-timer.is-ticking,
+  #screen-game .game-timer.is-complete,
+  #screen-game .puzzle-grid.is-progressing,
+  #screen-game .puzzle-grid.is-completing,
+  #screen-game .complete-particle {
+    animation: none !important;
+  }
+
+  #screen-game .puzzle-grid.is-complete-rest {
+    box-shadow: 0 12px 28px rgba(129, 118, 222, .2);
+    filter: brightness(1.02);
+  }
 }
