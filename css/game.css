@@ -235,6 +235,7 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
 }
 
 .puzzle-grid {
+  --puzzle-guide-image: none;
   position: relative;
   width: var(--game-board-width);
   aspect-ratio: 1;
@@ -244,7 +245,44 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   touch-action: none; /* Crucial for custom drag logic on touch devices */
   will-change: transform, box-shadow, filter;
   z-index: 2;
+  transition: box-shadow 120ms ease-out, filter 120ms ease-out;
 }
+
+.puzzle-grid::before,
+.puzzle-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.puzzle-grid::before {
+  z-index: 1;
+  background-image: var(--puzzle-guide-image);
+  background-size: cover;
+  background-position: center;
+  opacity: .28;
+}
+
+.puzzle-grid::after {
+  z-index: 2;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(25% - 1px),
+      rgba(255, 255, 255, .28) calc(25% - 1px),
+      rgba(255, 255, 255, .28) 25%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(25% - 1px),
+      rgba(255, 255, 255, .28) calc(25% - 1px),
+      rgba(255, 255, 255, .28) 25%
+    );
+}
+
 
 .puzzle-grid.is-progressing {
   animation: boardProgressPulse var(--board-progress-duration) var(--tactile-soft-ease);
@@ -346,7 +384,7 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   will-change: transform, box-shadow;
   backface-visibility: hidden;
   box-shadow: 0 12px 24px rgba(65, 42, 120, .18);
-  z-index: 1;
+  z-index: 3;
 }
 
 .puzzle-tile::after {
@@ -468,6 +506,7 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   width: var(--game-board-width);
   max-width: 100%;
   justify-self: center;
+  flex-wrap: wrap;
   gap: clamp(.6rem, 1.5vmin, 1.5rem);
 }
 
@@ -476,20 +515,16 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
 }
 
 #screen-game .btn {
+  border-radius: clamp(16px, 38%, 30px);
   transition:
-    transform var(--btn-bounce-duration) var(--tactile-spring-ease),
-    box-shadow var(--btn-bounce-duration) var(--tactile-soft-ease);
+    transform 170ms cubic-bezier(.2,.75,.25,1),
+    box-shadow 170ms ease;
   box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color);
 }
 
-#screen-game .btn:active {
-  transform: none;
-  box-shadow: 0 var(--btn-shadow-depth) 0 var(--btn-shadow-color);
-}
-
+#screen-game .btn:active,
 #screen-game .btn.is-pressed {
-  --btn-shadow-depth: 2px;
-  transform: translateY(2px) scale(.968, .948);
+  box-shadow: none;
 }
 
 /* Hidden debug button for testing the completion flow */
@@ -499,7 +534,7 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   right: 8px;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: clamp(16px, 38%, 30px);
   border: 2px dashed #ccc;
   background: rgba(255,255,255,.6);
   font-size: 16px;
@@ -553,5 +588,11 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   #screen-game .puzzle-grid.is-complete-rest {
     box-shadow: 0 12px 28px rgba(129, 118, 222, .2);
     filter: brightness(1.02);
+  }
+}
+
+@media (max-width: 820px) {
+  .game-footer__center .btn {
+    min-width: clamp(130px, 38vw, 220px);
   }
 }

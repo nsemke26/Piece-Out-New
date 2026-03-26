@@ -1,45 +1,7 @@
-/* =====================================================
-   PIECE OUT  -  4×4 Sliding Puzzle Game
-   Vanilla JS  |  Touch + Mouse  |  localStorage LB
-
-   This script handles the entire application lifecycle, from 
-   the splash screen to the core puzzle engine and the 
-   persistent leaderboard system.
-
-   SECTIONS:
-   1. DATA           – Grid constants, puzzle catalog, category list, and name banks.
-   2. STATE          – Centralized state management for the active game session.
-   3. DOM CACHE      – Efficient element querying and storage.
-   4. HELPERS        – Utility functions for formatting, randomizing, and scoring.
-   5. PLAYER         – LocalStorage management for persistent player profiles.
-   6. LEADERBOARD    – CRUD operations for the local high-score system.
-   7. NAVIGATION     – Screen switching and modal overlay management.
-   8. SPLASH         – Entry point logic and auto-login checks.
-   9. NAME ENTRY     – User onboarding and guest account generation.
-  10. CATEGORIES     – Dynamic rendering of the puzzle selection interface.
-  11. DETAILS MODAL  – Pre-game puzzle previews.
-  12. PUZZLE ENGINE  – Core 4x4 grid logic, shuffling, and win-state detection.
-  13. DRAG / TOUCH   – Advanced pointer-event handlers for intuitive gameplay.
-  14. TIMER          – Accurate gameplay duration tracking.
-  15. GAME FLOW      – High-level orchestration of play, end, and reset cycles.
-  16. HELP MODAL     – In-game reference imagery for the player.
-  17. COMPLETE MODAL – Post-solve performance summary.
-  18. LEADERBOARD UI – Rendering the competitive global rankings.
-  19. GAME BUTTONS   – Controls for game navigation and debug tools.
-  20. INIT           – Application bootstrap and event wiring.
-   ===================================================== */
-
-
-/* ==========================================================================
-   1. DATA
-   Static configuration and the puzzle database. The catalog is organized by 
-   thematic categories to facilitate easy navigation and filtering.
-   ========================================================================== */
-
-const GRID = 4;                       // 4x4 grid dimensions
-const TILES = GRID * GRID;            // Total slots (15 tiles + 1 empty)
-const SHUFFLE_MOVES = 300;            // Number of random moves to ensure difficulty
-const IMG = './images/joaquin.png';    // Placeholder image used across the demo
+const GRID = 4;
+const TILES = GRID * GRID;
+const SHUFFLE_MOVES = 300;
+const IMG = './images/joaquin.png';
 const MOTION = {
   transientClassResetMs: 420,
   tileRewardDelayMs: 140,
@@ -94,47 +56,46 @@ const GAME_INTRO_MOTION = {
   readyAccentTimerScale: 1.035,
   readyAccentTimerY: -1,
 };
-
-// Defined categories for the sidebar navigation
+const SOUND = {
+  puzzleSelectSrc: './sounds/puzzle-click.mp3',
+  puzzleCompleteSrc: './sounds/puzzle-complete.mp3',
+  buttonClickSrc: './sounds/button-click.mp3',
+  invalidMoveSrc: './sounds/invalid-move.mp3',
+  puzzleSelectVolume: 0.55,
+  puzzleCompleteVolume: 0.75,
+  buttonClickVolume: 0.42,
+  invalidMoveVolume: 0.62,
+};
 const CATEGORIES = [
-  { id: 'landscapes', name: 'Landscapes',        icon: 'ph-fill ph-mountains' },
-  { id: 'movies',     name: 'Movies',            icon: 'ph-fill ph-film-slate' },
-  { id: 'animals',    name: 'Animals',            icon: 'ph-fill ph-paw-print' },
-  { id: 'all',        name: 'All',                icon: 'ph-fill ph-puzzle-piece' },
-  { id: 'food',       name: 'Food',               icon: 'ph-fill ph-hamburger' },
-  { id: 'art',        name: 'Art',  icon: 'ph-fill ph-palette' },
+  { id: 'landscapes', name: 'Landscapes',        icon: 'ph ph-mountains' },
+  { id: 'movies',     name: 'Movies',            icon: 'ph ph-film-slate' },
+  { id: 'animals',    name: 'Animals',            icon: 'ph ph-paw-print' },
+  { id: 'all',        name: 'All',                icon: 'ph ph-puzzle-piece' },
+  { id: 'food',       name: 'Food',               icon: 'ph ph-hamburger' },
+  { id: 'art',        name: 'Art',  icon: 'ph ph-palette' },
 ];
-
-// The full puzzle database
 const PUZZLES = [
-  // Landscapes
   { id:'land-1', title:'Royal Canadian Mint',             description:'An iconic view of the Royal Canadian Mint, known for producing circulation and collector coins.', category:'landscapes', image: "images/landscape-1.jpg" },
   { id:'land-2', title:'Exchange District',               description:'Historic warehouse architecture and vibrant streets from Winnipeg’s Exchange District.', category:'landscapes', image: "images/landscape-2.jpg" },
   { id:'land-3', title:'St Boniface Cathedral',           description:'The remarkable facade and grounds of St Boniface Cathedral, a major historic landmark.', category:'landscapes', image: "images/landscape-3.jpg" },
   { id:'land-4', title:'Canadian Museum of Human Rights', description:'The striking modern design of the Canadian Museum for Human Rights in downtown Winnipeg.', category:'landscapes', image: "images/landscape-4.jpg" },
-  // Movies
   { id:'movie-1', title:'Kung Fu Panda',   description:'Po trains under Master Shifu and the Furious Five to become the Dragon Warrior.', category:'movies', image: "images/kung_fu_panda.jpg" },
   { id:'movie-2', title:'Ratatouille',     description:'Remy, a rat with a passion for cooking, helps create unforgettable dishes in Paris.',   category:'movies', image: "images/rataouille.jpg" },
   { id:'movie-3', title:'Shrek',           description:'Shrek and Donkey set out on a hilarious adventure through a fairy-tale world.',         category:'movies', image: "images/shrek.jpg" },
   { id:'movie-4', title:'Despicable Me',   description:'Gru and his mischievous Minions pull off wild schemes that turn into family moments.',    category:'movies', image: "images/despicable.jpg" },
-  // Animals
   { id:'anim-1', title:'Arctic Fox',        description:'The elegant white fox navigating through the frozen tundra.',                            category:'animals', image: IMG },
   { id:'anim-2', title:'Tropical Parrot',   description:'A vibrant macaw perched on a branch in the lush rainforest.',                            category:'animals', image: IMG },
   { id:'anim-3', title:'Ocean Dolphin',     description:'Playful dolphins leaping through crystal clear tropical waters.',                        category:'animals', image: IMG },
   { id:'anim-4', title:'Safari Lion',       description:'The king of the savannah resting under an acacia tree at dusk.',                        category:'animals', image: IMG },
-  // Food
   { id:'food-1', title:'Pizza Perfection',  description:'A golden, cheesy pizza with fresh toppings and a perfectly crisp crust.',                 category:'food', image: "images/food-1-pizza.jpg" },
   { id:'food-2', title:'Sushi Platter',     description:'A colorful assortment of sushi rolls and nigiri, neatly arranged and ready to serve.',   category:'food', image: "images/food-2-sushi.jpg" },
   { id:'food-3', title:'Street Tacos',      description:'Fresh street-style tacos packed with vibrant fillings, herbs, and bold flavors.',         category:'food', image: "images/food-3-tacos.jpg" },
   { id:'food-4', title:'Caesar Salad',      description:'A crisp Caesar salad with romaine, parmesan, croutons, and creamy dressing.',            category:'food', image: "images/food-4-caesar-salad.jpg" },
-  // Art
   { id:'art-1', title:'The Great Wave',     description:"Hokusai's iconic woodblock print captures a towering wave curling over boats beneath Mount Fuji.", category:'art', image: "images/art-1.jpg" },
   { id:'art-2', title:'Starry Night',       description:"Van Gogh's swirling night sky glows above a quiet village in one of the world's most recognizable paintings.", category:'art', image: "images/art-2.jpg" },
   { id:'art-3', title:'Water Lilies',       description:"Monet's serene scene of floating lilies reflects light, color, and movement across the water's surface.", category:'art', image: "images/art-3.jpeg" },
   { id:'art-4', title:'American Gothic',    description:"Grant Wood's famous portrait presents a stern farmer and his daughter before a simple rural home.", category:'art', image: "images/art-4.jpg" },
 ];
-
-// Word banks for generating creative, themed random names
 const NAME_PRE = [
   'Pixel','Debug','Serif','Vector','Flex','Grid','Retro','Glitch','Based',
   'Sigma','Goated','Epic','Dank','Cracked','Sudo','Async','Turbo','Mega',
@@ -148,41 +109,39 @@ const NAME_SUF = [
 ];
 
 
-/* ==========================================================================
-   2. STATE
-   The Single Source of Truth for the application. All UI updates and game 
-   logic transformations should derive from or update this object.
-   ========================================================================== */
-
 const state = {
   playerName: '',
   screen: 'splash',
   selectedCategory: 'landscapes',
   currentPuzzle: null,
-  board: [],           // Flat array representing the 4x4 grid (0 is the empty slot)
+  board: [],
+  holdPreviewBoard: null,
+  holdPreviewActive: false,
   moves: 0,
   timeSeconds: 0,
   timerInterval: null,
   isPlaying: false,
   isCompleting: false,
+  startSessionId: null,
+  boardImageSrc: '',
   completeModalTimeout: null,
-  lastResult: null,    // Results of the last completed puzzle
+  lastResult: null,
 };
 
-
-/* ==========================================================================
-   3. DOM CACHE
-   A simple object-based cache to avoid expensive document.querySelector 
-   calls during high-frequency events like dragging.
-   ========================================================================== */
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 const dom = {};
+const sounds = {
+  puzzleSelect: null,
+  puzzleComplete: null,
+  buttonClick: null,
+  invalidMove: null,
+};
+const squareImageCache = new Map();
 
 function cacheDom() {
-  // Navigation Screens
   dom.screens        = $$('.screen');
   dom.splash         = $('#screen-splash');
   dom.btnSplash      = $('#btn-splash');
@@ -195,8 +154,6 @@ function cacheDom() {
   dom.catMain        = $('.cat-main');
   dom.catGrid        = $('#cat-grid');
   dom.btnRandom      = $('#btn-random');
-
-  // Game Interface
   dom.gameScreen     = $('#screen-game');
   dom.gameHeader     = $('.game-header');
   dom.gameTitle      = $('.game-header__title');
@@ -209,12 +166,11 @@ function cacheDom() {
   dom.gameFooterCenter = $('.game-footer__center');
   dom.btnReset       = $('#btn-reset');
   dom.btnHelp        = $('#btn-help');
-  dom.gameActionButtons = [dom.btnBack, dom.btnReset, dom.btnHelp].filter(Boolean);
+  dom.btnCompare     = $('#btn-compare');
+  dom.gameActionButtons = [dom.btnBack, dom.btnReset, dom.btnHelp, dom.btnCompare].filter(Boolean);
   dom.gameBackgroundShapes = Array.from(
     $$('#screen-game .background-logo, #screen-game .background-logo-2')
   );
-
-  // Leaderboard Interface
   dom.lbScreen       = $('#screen-leaderboard');
   dom.lbImage        = $('#lb-image');
   dom.lbTitle        = $('#lb-title');
@@ -223,15 +179,11 @@ function cacheDom() {
   dom.lbYou          = $('#lb-you');
   dom.btnLbRestart   = $('#btn-lb-restart');
   dom.btnLbHome      = $('#btn-lb-home');
-
-  // Modals – Help
   dom.modalHelp      = $('#modal-help');
   dom.helpImage      = $('#help-image');
   dom.helpName       = $('#help-name');
   dom.helpDesc       = $('#help-desc');
   dom.btnHelpClose   = $('#btn-help-close');
-
-  // Modals – Complete
   dom.modalComplete  = $('#modal-complete');
   dom.statMoves      = $('#stat-moves');
   dom.statTime       = $('#stat-time');
@@ -240,8 +192,6 @@ function cacheDom() {
   dom.btnCplLb       = $('#btn-cpl-lb');
   dom.btnCplCats     = $('#btn-cpl-cats');
   dom.btnCplRestart  = $('#btn-cpl-restart');
-
-  // Modals – Details
   dom.modalDetails   = $('#modal-details');
   dom.detailsImage   = $('#details-image');
   dom.detailsName    = $('#details-name');
@@ -252,32 +202,71 @@ function cacheDom() {
 }
 
 
-/* ==========================================================================
-   4. HELPERS
-   Small, reusable utility functions to keep core logic clean and readable.
-   ========================================================================== */
-
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
 
-// Creates a composite name from the pre/suf word banks
+function createSound(src, volume) {
+  const audio = new Audio(src);
+  audio.preload = 'auto';
+  audio.volume = volume;
+  return audio;
+}
+
+function initSounds() {
+  sounds.puzzleSelect = createSound(SOUND.puzzleSelectSrc, SOUND.puzzleSelectVolume);
+  sounds.puzzleComplete = createSound(SOUND.puzzleCompleteSrc, SOUND.puzzleCompleteVolume);
+  sounds.buttonClick = createSound(SOUND.buttonClickSrc, SOUND.buttonClickVolume);
+  sounds.invalidMove = createSound(SOUND.invalidMoveSrc, SOUND.invalidMoveVolume);
+}
+
+function playSound(soundKey) {
+  const audio = sounds[soundKey];
+  if (!audio) return;
+  audio.currentTime = 0;
+  const maybePromise = audio.play();
+  if (maybePromise && typeof maybePromise.catch === 'function') {
+    maybePromise.catch(() => {});
+  }
+}
+
+function getSquareImageSrc(src) {
+  if (squareImageCache.has(src)) return squareImageCache.get(src);
+
+  const promise = new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      const sx = Math.floor((img.naturalWidth - side) / 2);
+      const sy = Math.floor((img.naturalHeight - side) / 2);
+      const canvas = document.createElement('canvas');
+      canvas.width = side;
+      canvas.height = side;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(src);
+        return;
+      }
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, side, side);
+      resolve(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.onerror = () => resolve(src);
+    img.src = src;
+  });
+
+  squareImageCache.set(src, promise);
+  return promise;
+}
 function generateName() {
   return rand(NAME_PRE) + rand(NAME_SUF) + randInt(0, 99);
 }
-
-// Converts seconds into a user-friendly M:SS format
 function formatTime(s) {
   const m = Math.floor(s / 60);
   const sec = s % 60;
   return m + ':' + String(sec).padStart(2, '0');
 }
-
-// Custom scoring algorithm: moves are prioritized, time acts as a minor penalty
 function calculateScore(moves, timeSec) {
   return moves + Math.floor(timeSec * 1.5);
 }
-
-// Data fetching helpers
 function puzzlesForCategory(catId) {
   if (catId === 'all') return [...PUZZLES];
   return PUZZLES.filter(p => p.category === catId);
@@ -287,11 +276,6 @@ function getPuzzle(id) {
   return PUZZLES.find(p => p.id === id);
 }
 
-
-/* ==========================================================================
-   5. PLAYER (localStorage)
-   Persists player data across browser sessions to improve UX on return.
-   ========================================================================== */
 
 const PLAYER_KEY = 'pieceout_player';
 
@@ -310,20 +294,12 @@ function savePlayer(name) {
 }
 
 
-/* ==========================================================================
-   6. LEADERBOARD (localStorage, per puzzle)
-   Handles storage and retrieval of high scores. Each puzzle has its own 
-   dedicated leaderboard to maintain granular competitiveness.
-   ========================================================================== */
-
 function lbKey(puzzleId) { return 'pieceout_lb_' + puzzleId; }
 
 function getLeaderboard(puzzleId) {
   const raw = localStorage.getItem(lbKey(puzzleId));
   return raw ? JSON.parse(raw) : [];
 }
-
-// Saves a new entry, sorts by score, and trims the list to the top 50
 function saveLeaderboardEntry(puzzleId, entry) {
   const lb = getLeaderboard(puzzleId);
   lb.push(entry);
@@ -333,11 +309,6 @@ function saveLeaderboardEntry(puzzleId, entry) {
   return trimmed;
 }
 
-
-/* ==========================================================================
-   7. NAVIGATION
-   Orchestrates screen transitions by toggling visibility classes.
-   ========================================================================== */
 
 function showScreen(id) {
   if (state.screen === 'game' && id !== 'game') killGameIntro();
@@ -372,12 +343,6 @@ function closeNameOverlay() {
 }
 
 
-/* ==========================================================================
-   8. SPLASH
-   The application landing point. Checks for existing user profiles to 
-   optionally skip the name entry process.
-   ========================================================================== */
-
 function initSplash() {
   const go = () => {
     openNameOverlay();
@@ -385,12 +350,6 @@ function initSplash() {
   dom.btnSplash.addEventListener('click', (e) => { e.stopPropagation(); go(); });
 }
 
-
-/* ==========================================================================
-   9. NAME ENTRY
-   Validates and saves player identity. Guest accounts provide a friction-free 
-   path to gameplay while still maintaining a persistent identity for the LB.
-   ========================================================================== */
 
 function initNameEntry() {
   dom.btnStartNamed.addEventListener('click', () => {
@@ -419,12 +378,6 @@ function initNameEntry() {
 }
 
 
-/* ==========================================================================
-   10. CATEGORIES
-   Populates the category navigation and puzzle grid. Uses a template-based 
-   approach to dynamically generate cards from the PUZZLES data array.
-   ========================================================================== */
-
 function renderCategories() {
   renderSidebar();
   renderCategoryGrid(state.selectedCategory);
@@ -445,6 +398,7 @@ function renderSidebar() {
       state.selectedCategory = cat.id;
       renderCategories();
     });
+    bindTactileButton(btn);
     dom.catSidebar.appendChild(btn);
   });
 }
@@ -465,8 +419,13 @@ function renderCategoryGrid(catId) {
         <button class="puzzle-card__details" data-id="${pz.id}">DETAILS</button>
       </div>`;
 
-    card.querySelector('.puzzle-card__img').addEventListener('click', () => startGame(pz.id));
-    card.querySelector('.puzzle-card__details').addEventListener('click', (e) => {
+    card.querySelector('.puzzle-card__img').addEventListener('click', () => {
+      playSound('puzzleSelect');
+      startGame(pz.id);
+    });
+    const detailsBtn = card.querySelector('.puzzle-card__details');
+    bindTactileButton(detailsBtn);
+    detailsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       showDetails(pz.id);
     });
@@ -480,16 +439,11 @@ function initCategories() {
     const puzzles = puzzlesForCategory(state.selectedCategory);
     if (!puzzles.length) return;
     const chosen = rand(puzzles);
+    playSound('puzzleSelect');
     startGame(chosen.id);
   });
 }
 
-
-/* ==========================================================================
-   11. DETAILS MODAL
-   Contextual preview of a puzzle before starting. Shows descriptions and 
-   category tags.
-   ========================================================================== */
 
 let detailsPuzzleId = null;
 
@@ -508,23 +462,17 @@ function showDetails(puzzleId) {
 function initDetailsModal() {
   dom.btnDetailsPlay.addEventListener('click', () => {
     closeModal('details');
-    if (detailsPuzzleId) startGame(detailsPuzzleId);
+    if (detailsPuzzleId) {
+      playSound('puzzleSelect');
+      startGame(detailsPuzzleId);
+    }
   });
   dom.btnDetailsClose.addEventListener('click', () => closeModal('details'));
 }
 
 
-/* ==========================================================================
-   12. PUZZLE ENGINE
-   Core game mechanics. Utilizes background-position CSS to slice a single 
-   image into grid tiles. Employs random valid-move shuffling to ensure 
-   the puzzle is always solvable.
-   ========================================================================== */
-
-const tileEls = {};   // Maps tile numerical values to their DOM elements
+const tileEls = {};
 let gameIntroTl = null;
-
-// Determines adjacent indices in a flat array for a 2D grid
 function neighbors(pos) {
   const r = Math.floor(pos / GRID), c = pos % GRID;
   const out = [];
@@ -534,8 +482,6 @@ function neighbors(pos) {
   if (c < GRID - 1) out.push(pos + 1);
   return out;
 }
-
-// Shuffles from solved state using valid moves
 function shuffleBoard() {
   state.board = [];
   for (let i = 1; i < TILES; i++) state.board.push(i);
@@ -564,6 +510,7 @@ function isSolved() {
 function createTiles() {
   dom.puzzleGrid.innerHTML = '';
   Object.keys(tileEls).forEach(k => delete tileEls[k]);
+  const tileImageSrc = state.boardImageSrc || state.currentPuzzle.image;
 
   for (let num = 1; num < TILES; num++) {
     const el = document.createElement('div');
@@ -574,7 +521,7 @@ function createTiles() {
     const srcCol = (num - 1) % GRID;
     const bx = (srcCol / (GRID - 1)) * 100;
     const by = (srcRow / (GRID - 1)) * 100;
-    el.style.backgroundImage = `url('${state.currentPuzzle.image}')`;
+    el.style.backgroundImage = `url('${tileImageSrc}')`;
     el.style.backgroundSize = '400% 400%';
     el.style.backgroundPosition = `${bx}% ${by}%`;
 
@@ -868,6 +815,7 @@ function restartTransientClass(el, className, clearDelay = MOTION.transientClass
 }
 
 function triggerInvalidTileFeedback(el) {
+  playSound('invalidMove');
   restartTransientClass(el, 'is-invalid');
 }
 
@@ -942,7 +890,6 @@ function createCompletionParticles() {
   if (prefersReducedMotion() || !dom.completeParticles) return;
 
   const particles = [
-    // Outer ring
     { left: '0%', top: '12%', width: '20px', height: '20px', x: '-58px', y: '-70px', rotateStart: '-12deg', rotateEnd: '26deg', color: 'rgba(110, 211, 255, .96)', shape: 'square' },
     { left: '-2%', top: '26%', width: '26px', height: '26px', x: '-70px', y: '-30px', rotateStart: '-22deg', rotateEnd: '20deg', color: 'rgba(129, 118, 222, .92)', shape: 'squircle' },
     { left: '-3%', top: '42%', width: '34px', height: '16px', x: '-74px', y: '-8px', rotateStart: '-12deg', rotateEnd: '18deg', color: 'rgba(255, 222, 45, .95)', shape: 'rect' },
@@ -957,7 +904,6 @@ function createCompletionParticles() {
     { left: '104%', top: '28%', width: '24px', height: '24px', x: '72px', y: '-24px', rotateStart: '18deg', rotateEnd: '-22deg', color: 'rgba(129, 118, 222, .92)', shape: 'squircle' },
     { left: '104%', top: '46%', width: '34px', height: '16px', x: '74px', y: '2px', rotateStart: '10deg', rotateEnd: '-18deg', color: 'rgba(255, 222, 45, .96)', shape: 'rect' },
     { left: '102%', top: '64%', width: '30px', height: '14px', x: '68px', y: '26px', rotateStart: '8deg', rotateEnd: '-14deg', color: 'rgba(249, 115, 22, .86)', shape: 'rect' },
-    // Near-board ring
     { left: '8%', top: '16%', width: '16px', height: '16px', x: '-34px', y: '-44px', rotateStart: '-8deg', rotateEnd: '18deg', color: 'rgba(110, 211, 255, .9)', shape: 'square' },
     { left: '3%', top: '34%', width: '18px', height: '18px', x: '-38px', y: '-12px', rotateStart: '-14deg', rotateEnd: '12deg', color: 'rgba(157, 100, 170, .88)', shape: 'squircle' },
     { left: '5%', top: '52%', width: '24px', height: '12px', x: '-34px', y: '6px', rotateStart: '-8deg', rotateEnd: '10deg', color: 'rgba(255, 222, 45, .9)', shape: 'rect' },
@@ -1023,8 +969,6 @@ function startCompletionSequence(moves, time, moveRank, timeRank) {
     showCompleteModal(moves, time, moveRank, timeRank);
   }, reducedMotion ? MOTION.reducedCompleteModalDelayMs : MOTION.completeModalDelayMs);
 }
-
-// Syncs the DOM tile positions with the internal state array using CSS transforms
 function renderBoard(animate) {
   for (let pos = 0; pos < TILES; pos++) {
     const num = state.board[pos];
@@ -1218,12 +1162,19 @@ function startGame(puzzleId) {
   closeAllModals();
   const pz = getPuzzle(puzzleId);
   if (!pz) return;
+  const sessionId = `${pz.id}-${Date.now()}-${Math.random()}`;
+  state.startSessionId = sessionId;
   state.currentPuzzle = pz;
   state.moves = 0;
   state.isPlaying = true;
   state.lastResult = null;
+  state.boardImageSrc = await getSquareImageSrc(pz.image);
+  if (state.startSessionId !== sessionId) return;
 
   showScreen('game');
+  if (dom.puzzleGrid) {
+    dom.puzzleGrid.style.setProperty('--puzzle-guide-image', `url('${state.boardImageSrc}')`);
+  }
   createTiles();
   shuffleBoard();
   renderBoard(false);
@@ -1233,6 +1184,7 @@ function startGame(puzzleId) {
 
 function endGame() {
   killGameIntro();
+  hidePuzzleReference();
   state.isPlaying = false;
   stopTimer();
 
@@ -1242,8 +1194,6 @@ function endGame() {
 
   const entry = { player: state.playerName, moves, time, score, ts: Date.now() };
   const lb = saveLeaderboardEntry(state.currentPuzzle.id, entry);
-
-  // Calculate distinct ranks for moves, time, and combined score
   const byScore = [...lb].sort((a, b) => a.score - b.score);
   const byMoves = [...lb].sort((a, b) => a.moves - b.moves);
   const byTime  = [...lb].sort((a, b) => a.time  - b.time);
@@ -1255,6 +1205,7 @@ function endGame() {
     timeRank:    byTime.findIndex(e => e.ts === entry.ts) + 1
   };
 
+  playSound('puzzleComplete');
   startCompletionSequence(moves, time, state.lastResult.moveRank, state.lastResult.timeRank);
 }
 
@@ -1263,6 +1214,7 @@ function resetGame() {
   killGameIntro();
   clearCompletionState();
   closeAllModals();
+  hidePuzzleReference();
   state.moves = 0;
   state.isPlaying = true;
   shuffleBoard();
@@ -1270,6 +1222,36 @@ function resetGame() {
   startTimer();
 }
 
+function showPuzzleReference() {
+  // While held, show a solved preview and restore the real board on release.
+  if (!state.currentPuzzle || state.isCompleting || state.holdPreviewActive) return;
+  if (!Array.isArray(state.board) || state.board.length !== TILES) return;
+
+  state.holdPreviewBoard = [...state.board];
+  state.holdPreviewActive = true;
+  state.isPlaying = false;
+
+  for (let i = 0; i < TILES - 1; i++) state.board[i] = i + 1;
+  state.board[TILES - 1] = 0;
+
+  dom.puzzleGrid.classList.add('is-hold-preview', 'is-complete-rest');
+  renderBoard(false);
+}
+
+function hidePuzzleReference() {
+  if (!state.holdPreviewActive) return;
+
+  if (Array.isArray(state.holdPreviewBoard) && state.holdPreviewBoard.length === TILES) {
+    state.board = [...state.holdPreviewBoard];
+  }
+
+  state.holdPreviewBoard = null;
+  state.holdPreviewActive = false;
+  state.isPlaying = Boolean(state.currentPuzzle) && !state.isCompleting;
+
+  dom.puzzleGrid.classList.remove('is-hold-preview', 'is-complete-rest');
+  renderBoard(false);
+}
 
 /* ==========================================================================
    16. HELP MODAL
@@ -1369,24 +1351,56 @@ function initGameButtons() {
   dom.btnBack.addEventListener('click', () => {
     if (state.isCompleting) return;
     clearCompletionState();
+    hidePuzzleReference();
     stopTimer();
     state.isPlaying = false;
     showScreen('categories');
     renderCategories();
   });
   dom.btnReset.addEventListener('click', resetGame);
-  [dom.btnBack, dom.btnReset, dom.btnHelp].forEach(bindTactileButton);
+  if (dom.btnCompare) {
+    const press = (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (dom.btnCompare.setPointerCapture) {
+        try { dom.btnCompare.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+      showPuzzleReference();
+    };
+    const release = () => hidePuzzleReference();
+    dom.btnCompare.addEventListener('pointerdown', press);
+    dom.btnCompare.addEventListener('pointerup', release);
+    dom.btnCompare.addEventListener('pointercancel', release);
+    dom.btnCompare.addEventListener('pointerleave', release);
+    dom.btnCompare.addEventListener('lostpointercapture', release);
+    dom.btnCompare.addEventListener('blur', release);
+  }
+  [dom.btnBack, dom.btnReset, dom.btnHelp, dom.btnCompare].forEach(bindTactileButton);
   if ($('#btn-debug-solve')) $('#btn-debug-solve').addEventListener('click', debugSolve);
 }
 
 function bindTactileButton(el) {
   if (!el) return;
-
-  const release = () => el.classList.remove('is-pressed');
+  if (el.dataset.tactileBound === '1') return;
+  el.dataset.tactileBound = '1';
+  const release = () => {
+    el.classList.remove('is-pressed');
+    if (window.gsap) {
+      gsap.killTweensOf(el);
+      gsap.to(el, { y: 0, duration: 0.14, ease: 'power2.out' });
+    } else {
+      el.style.transform = '';
+    }
+  };
 
   el.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     el.classList.add('is-pressed');
+    if (window.gsap) {
+      gsap.killTweensOf(el);
+      gsap.to(el, { y: 6, duration: 0.08, ease: 'power2.out' });
+    } else {
+      el.style.transform = 'translateY(6px)';
+    }
     if (el.setPointerCapture) {
       try { el.setPointerCapture(e.pointerId); } catch (_) {}
     }
@@ -1398,7 +1412,13 @@ function bindTactileButton(el) {
   el.addEventListener('blur', release);
 }
 
-// Development helper to bypass gameplay for flow testing
+function initGlobalButtonSound() {
+  document.addEventListener('click', (e) => {
+    const button = e.target.closest('button');
+    if (!button) return;
+    playSound('buttonClick');
+  });
+}
 function debugSolve() {
   if (!state.isPlaying || !state.currentPuzzle) return;
   for (let i = 0; i < TILES - 1; i++) state.board[i] = i + 1;
@@ -1416,6 +1436,9 @@ function debugSolve() {
 
 function initApp() {
   cacheDom();
+  initSounds();
+  initGlobalButtonSound();
+  $$('button').forEach(bindTactileButton);
   document.body.classList.toggle('has-gsap-intro', Boolean(window.gsap));
   initSplash();
   initNameEntry();
@@ -1430,3 +1453,5 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
+
+

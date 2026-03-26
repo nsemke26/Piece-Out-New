@@ -60,34 +60,15 @@
 
 /* Hero Button for Splash */
 .btn-start-game {
-  background: var(--orange);
   padding: clamp(0.75rem, 2vh, 1.6rem) clamp(2rem, 5vw, 3.8rem);
   font-size: clamp(1.4rem, 3.4vw, 3rem);
   font-weight: 900;
-  border-radius: var(--radius-pill);
-  color: #fff;
-  box-shadow: 0 clamp(6px, 1vw, 12px) 0 0 var(--orange-dark);
   text-transform: uppercase;
-  display: flex;
-  align-items: center;
   gap: 0.5em;
-  border: none;
-  cursor: pointer;
-  transition: transform var(--transition), box-shadow var(--transition);
 }
 
 .btn-start-game:active {
-  transform: translateY(clamp(4px, 0.6vw, 12px));
-  box-shadow: 0 clamp(4px, 0.6vw, 12px) 0 0 var(--orange-dark);
-}
-
-.play-icon {
-  width: 0.8em;
-  height: 0.8em;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  transform: translateY(3px);
 }
 
 .hint-pill {

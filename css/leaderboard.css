@@ -331,6 +331,7 @@
 .lb-actions {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: clamp(10px, 1.5vw, 20px);
   margin-top: auto;
   z-index: 1;
@@ -357,56 +358,3 @@
   }
 }
 
-.btn-restart {
-  background: var(--orange);
-  color: #fff;
-  padding: clamp(10px, 1.2vw, 20px) clamp(24px, 2.5vw, 50px);
-  border: clamp(3px, 0.3vw, 8px) solid #c2410c;
-  border-radius: 9999px;
-  font-size: clamp(1.1rem, 1.8vw, 3rem);
-  font-weight: 900;
-  text-transform: uppercase;
-  box-shadow: 0 clamp(6px, 0.5vw, 16px) 0 #c2410c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(8px, 1.2vw, 20px);
-  transition: transform 0.05s ease-out, box-shadow 0.05s ease-out;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.btn-restart:active {
-  transform: translateY(clamp(6px, 0.5vw, 16px));
-  box-shadow: 0 0 0 transparent;
-}
-
-.btn-home {
-  background: #fff;
-  color: #f97316;
-  padding: clamp(10px, 1.2vw, 20px) clamp(24px, 2.5vw, 50px);
-  border: clamp(3px, 0.3vw, 8px) solid #f97316;
-  border-radius: 9999px;
-  font-size: clamp(1.1rem, 1.8vw, 3rem);
-  font-weight: 900;
-  text-transform: uppercase;
-  box-shadow: 0 clamp(6px, 0.5vw, 16px) 0 #f97316;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(8px, 1.2vw, 20px);
-  transition: transform 0.05s ease-out, box-shadow 0.05s ease-out;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.btn-home:active {
-  transform: translateY(clamp(6px, 0.5vw, 16px));
-  box-shadow: 0 0 0 transparent;
-}
-
-.btn-svg-icon {
-  width: 1.2em;
-  height: 1.2em;
-  object-fit: contain;
-}

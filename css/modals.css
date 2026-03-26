@@ -43,7 +43,7 @@
   right: clamp(.55rem, 1.1vmin, 1.1rem);
   width: clamp(34px, 3.2vmin, 54px);
   height: clamp(34px, 3.2vmin, 54px);
-  border-radius: 999px;
+  border-radius: clamp(16px, 38%, 30px);
   border: 3px solid var(--purple);
   background: #fff;
   color: var(--purple);
