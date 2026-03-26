@@ -1,7 +1,9 @@
-const GRID = 4;
+// Core puzzle settings (3x3 => 8 tiles + 1 empty slot).
+const GRID = 3;
 const TILES = GRID * GRID;
-const SHUFFLE_MOVES = 300;
+const SHUFFLE_MOVES = 180;
 const IMG = './images/joaquin.png';
+// Animation timing knobs used across board/tile feedback.
 const MOTION = {
   transientClassResetMs: 420,
   tileRewardDelayMs: 140,
@@ -13,6 +15,7 @@ const MOTION = {
   completeSettleResetMs: 420,
   completeParticlesResetMs: 1320,
 };
+// Intro sequence timing for the game screen.
 const GAME_INTRO_MOTION = {
   backgroundOpacity: 0.5,
   backgroundDuration: 0.3,
@@ -56,6 +59,7 @@ const GAME_INTRO_MOTION = {
   readyAccentTimerScale: 1.035,
   readyAccentTimerY: -1,
 };
+// Audio file paths and volume presets.
 const SOUND = {
   puzzleSelectSrc: './sounds/puzzle-click.mp3',
   puzzleCompleteSrc: './sounds/puzzle-complete.mp3',
@@ -66,6 +70,18 @@ const SOUND = {
   buttonClickVolume: 0.42,
   invalidMoveVolume: 0.62,
 };
+/*
+  Performance switches:
+  These are intentional "quality vs speed" toggles.
+  Keep them false for smooth play on slower laptops/phones, or set to true if
+  you want richer effects and your device handles them well.
+*/
+const PERFORMANCE = {
+  enableGameIntro: true,
+  enableTimerPulse: true,
+  enableCompletionParticles: true,
+};
+// Static game content.
 const CATEGORIES = [
   { id: 'landscapes', name: 'Landscapes',        icon: 'ph ph-mountains' },
   { id: 'movies',     name: 'Movies',            icon: 'ph ph-film-slate' },
@@ -109,6 +125,7 @@ const NAME_SUF = [
 ];
 
 
+// App state for current session/playthrough.
 const state = {
   playerName: '',
   screen: 'splash',
@@ -141,6 +158,7 @@ const sounds = {
 };
 const squareImageCache = new Map();
 
+// Cache all DOM references once to avoid repeated querySelector calls.
 function cacheDom() {
   dom.screens        = $$('.screen');
   dom.splash         = $('#screen-splash');
@@ -204,7 +222,17 @@ function cacheDom() {
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+// Fisher-Yates shuffle keeps the "All" page feeling fresh on each visit.
+function shuffle(list) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
+// Build an Audio instance with common defaults.
 function createSound(src, volume) {
   const audio = new Audio(src);
   audio.preload = 'auto';
@@ -212,6 +240,7 @@ function createSound(src, volume) {
   return audio;
 }
 
+// Preload sounds at startup so feedback feels instant.
 function initSounds() {
   sounds.puzzleSelect = createSound(SOUND.puzzleSelectSrc, SOUND.puzzleSelectVolume);
   sounds.puzzleComplete = createSound(SOUND.puzzleCompleteSrc, SOUND.puzzleCompleteVolume);
@@ -219,6 +248,7 @@ function initSounds() {
   sounds.invalidMove = createSound(SOUND.invalidMoveSrc, SOUND.invalidMoveVolume);
 }
 
+// Safe play helper; ignores autoplay errors from the browser.
 function playSound(soundKey) {
   const audio = sounds[soundKey];
   if (!audio) return;
@@ -229,6 +259,7 @@ function playSound(soundKey) {
   }
 }
 
+// Crop source image to square once, then reuse from cache.
 function getSquareImageSrc(src) {
   if (squareImageCache.has(src)) return squareImageCache.get(src);
 
@@ -277,6 +308,7 @@ function getPuzzle(id) {
 }
 
 
+// localStorage helpers for player identity.
 const PLAYER_KEY = 'pieceout_player';
 
 function loadPlayer() {
@@ -294,6 +326,7 @@ function savePlayer(name) {
 }
 
 
+// Leaderboard storage is scoped by puzzle id.
 function lbKey(puzzleId) { return 'pieceout_lb_' + puzzleId; }
 
 function getLeaderboard(puzzleId) {
@@ -310,6 +343,7 @@ function saveLeaderboardEntry(puzzleId, entry) {
 }
 
 
+// Shared screen/modal visibility helpers.
 function showScreen(id) {
   if (state.screen === 'game' && id !== 'game') killGameIntro();
   dom.screens.forEach(s => s.classList.remove('active'));
@@ -378,63 +412,105 @@ function initNameEntry() {
 }
 
 
+// Build category sidebar and puzzle cards from data config.
 function renderCategories() {
+  // One call updates theme + sidebar state + cards in a predictable order.
+  applyCategoryTheme(state.selectedCategory);
   renderSidebar();
   renderCategoryGrid(state.selectedCategory);
 }
 
+function applyCategoryTheme(catId) {
+  if (!dom.catScreen) return;
+  // CSS theme rules read this data attribute and map it to color variables.
+  dom.catScreen.dataset.theme = catId;
+}
+
 function renderSidebar() {
-  dom.catSidebar.innerHTML = '';
-  CATEGORIES.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (cat.id === state.selectedCategory ? ' active' : '');
-    const iconMarkup = cat.iconClass
-      ? `<i class="${cat.iconClass}" aria-hidden="true"></i>`
-      : (typeof cat.icon === 'string' && cat.icon.includes('ph-'))
-        ? `<i class="${cat.icon}" aria-hidden="true"></i>`
-        : cat.icon;
-    btn.innerHTML = `<span class="cat-btn__icon">${iconMarkup}</span> ${cat.name}`;
-    btn.addEventListener('click', () => {
-      state.selectedCategory = cat.id;
-      renderCategories();
+  if (!dom.catSidebar.childElementCount) {
+    const frag = document.createDocumentFragment();
+    CATEGORIES.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-btn';
+      btn.dataset.catId = cat.id;
+      const iconMarkup = cat.iconClass
+        ? `<i class="${cat.iconClass}" aria-hidden="true"></i>`
+        : (typeof cat.icon === 'string' && cat.icon.includes('ph-'))
+          ? `<i class="${cat.icon}" aria-hidden="true"></i>`
+          : cat.icon;
+      btn.innerHTML = `<span class="cat-btn__icon">${iconMarkup}</span> ${cat.name}`;
+      btn.addEventListener('click', () => {
+        if (state.selectedCategory === cat.id) return;
+        state.selectedCategory = cat.id;
+        applyCategoryTheme(state.selectedCategory);
+        updateSidebarActive();
+        renderCategoryGrid(state.selectedCategory);
+      });
+      bindTactileButton(btn);
+      frag.appendChild(btn);
     });
-    bindTactileButton(btn);
-    dom.catSidebar.appendChild(btn);
+    dom.catSidebar.appendChild(frag);
+  }
+  updateSidebarActive();
+}
+
+function updateSidebarActive() {
+  Array.from(dom.catSidebar.children).forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.catId === state.selectedCategory);
   });
 }
 
 function renderCategoryGrid(catId) {
-  const puzzles = puzzlesForCategory(catId);
+  // For "All", shuffle list order so users do not always see the same first cards.
+  const puzzles = catId === 'all'
+    ? shuffle(puzzlesForCategory(catId))
+    : puzzlesForCategory(catId);
   dom.catScreen.classList.toggle('screen-categories--four', puzzles.length === 4);
   dom.catScreen.classList.toggle('screen-categories--all', catId === 'all');
   if (catId === 'all' && dom.catMain) dom.catMain.scrollTop = 0;
-  dom.catGrid.innerHTML = '';
+  const frag = document.createDocumentFragment();
   puzzles.forEach(pz => {
     const card = document.createElement('div');
     card.className = 'puzzle-card';
+    card.dataset.id = pz.id;
+    card.dataset.category = pz.category;
     card.innerHTML = `
-      <div class="puzzle-card__img" style="background-image:url('${pz.image}')"></div>
+      <div class="puzzle-card__img" data-action="start" style="background-image:url('${pz.image}')"></div>
       <div class="puzzle-card__footer">
         <span class="puzzle-card__title">${pz.title}</span>
         <button class="puzzle-card__details" data-id="${pz.id}">DETAILS</button>
       </div>`;
-
-    card.querySelector('.puzzle-card__img').addEventListener('click', () => {
-      playSound('puzzleSelect');
-      startGame(pz.id);
-    });
     const detailsBtn = card.querySelector('.puzzle-card__details');
+    // Reuse the same tactile press interaction used by all app buttons.
     bindTactileButton(detailsBtn);
-    detailsBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      showDetails(pz.id);
-    });
 
-    dom.catGrid.appendChild(card);
+    frag.appendChild(card);
   });
+  dom.catGrid.replaceChildren(frag);
 }
 
 function initCategories() {
+  /*
+    Event delegation keeps this fast:
+    Instead of attaching handlers to every card on every render, one listener
+    on the grid handles both "open details" and "start game" clicks.
+  */
+  dom.catGrid.addEventListener('click', (e) => {
+    const detailsBtn = e.target.closest('.puzzle-card__details');
+    if (detailsBtn) {
+      e.stopPropagation();
+      showDetails(detailsBtn.dataset.id);
+      return;
+    }
+
+    const imageEl = e.target.closest('.puzzle-card__img');
+    if (!imageEl) return;
+    const card = imageEl.closest('.puzzle-card');
+    if (!card?.dataset.id) return;
+    playSound('puzzleSelect');
+    startGame(card.dataset.id);
+  });
+
   dom.btnRandom.addEventListener('click', () => {
     const puzzles = puzzlesForCategory(state.selectedCategory);
     if (!puzzles.length) return;
@@ -447,6 +523,7 @@ function initCategories() {
 
 let detailsPuzzleId = null;
 
+// Track selected puzzle id before user confirms Play in details modal.
 function showDetails(puzzleId) {
   const pz = getPuzzle(puzzleId);
   if (!pz) return;
@@ -473,6 +550,7 @@ function initDetailsModal() {
 
 const tileEls = {};
 let gameIntroTl = null;
+// Adjacent cells in a flattened GRID*GRID board.
 function neighbors(pos) {
   const r = Math.floor(pos / GRID), c = pos % GRID;
   const out = [];
@@ -482,6 +560,7 @@ function neighbors(pos) {
   if (c < GRID - 1) out.push(pos + 1);
   return out;
 }
+// Shuffle from solved state using valid moves, keeping puzzle solvable.
 function shuffleBoard() {
   state.board = [];
   for (let i = 1; i < TILES; i++) state.board.push(i);
@@ -507,6 +586,7 @@ function isSolved() {
   return state.board[TILES - 1] === 0;
 }
 
+// Create tile nodes and assign each tile its image slice.
 function createTiles() {
   dom.puzzleGrid.innerHTML = '';
   Object.keys(tileEls).forEach(k => delete tileEls[k]);
@@ -522,7 +602,7 @@ function createTiles() {
     const bx = (srcCol / (GRID - 1)) * 100;
     const by = (srcRow / (GRID - 1)) * 100;
     el.style.backgroundImage = `url('${tileImageSrc}')`;
-    el.style.backgroundSize = '400% 400%';
+    el.style.backgroundSize = `${GRID * 100}% ${GRID * 100}%`;
     el.style.backgroundPosition = `${bx}% ${by}%`;
 
     tileEls[num] = el;
@@ -887,7 +967,8 @@ function triggerCompletionTileSettle() {
 }
 
 function createCompletionParticles() {
-  if (prefersReducedMotion() || !dom.completeParticles) return;
+  // Particle effects are expensive, so they stay behind a performance toggle.
+  if (prefersReducedMotion() || !dom.completeParticles || !PERFORMANCE.enableCompletionParticles) return;
 
   const particles = [
     { left: '0%', top: '12%', width: '20px', height: '20px', x: '-58px', y: '-70px', rotateStart: '-12deg', rotateEnd: '26deg', color: 'rgba(110, 211, 255, .96)', shape: 'square' },
@@ -969,6 +1050,7 @@ function startCompletionSequence(moves, time, moveRank, timeRank) {
     showCompleteModal(moves, time, moveRank, timeRank);
   }, reducedMotion ? MOTION.reducedCompleteModalDelayMs : MOTION.completeModalDelayMs);
 }
+// Sync logical board state into tile positions in the DOM.
 function renderBoard(animate) {
   for (let pos = 0; pos < TILES; pos++) {
     const num = state.board[pos];
@@ -991,6 +1073,7 @@ function renderBoard(animate) {
   }
 }
 
+// Commit one legal move and evaluate progress/completion feedback.
 function performMove(tilePos) {
   const progressBefore = countSolvedTiles();
   const emptyPos = state.board.indexOf(0);
@@ -1005,13 +1088,7 @@ function performMove(tilePos) {
 }
 
 
-/* ==========================================================================
-   13. DRAG / TOUCH
-   Unified pointer events for smooth dragging and tapping. Includes 
-   directional snapping and axis constraints to mimic a physical sliding 
-   puzzle board.
-   ========================================================================== */
-
+// Pointer interaction state (tap + drag).
 const drag = {
   active: false,
   hasMoved: false,
@@ -1026,6 +1103,9 @@ const drag = {
   tileSize: 0,
   baseCol: 0,
   baseRow: 0,
+  framePending: false,
+  pendingDx: 0,
+  pendingDy: 0,
 };
 
 function onPointerDown(e) {
@@ -1061,27 +1141,41 @@ function onPointerDown(e) {
 
 function onPointerMove(e) {
   if (!drag.active) return;
-  const dx = e.clientX - drag.startX;
-  const dy = e.clientY - drag.startY;
+  drag.pendingDx = e.clientX - drag.startX;
+  drag.pendingDy = e.clientY - drag.startY;
+  /*
+    pointermove can fire much faster than the screen can paint.
+    We batch updates into requestAnimationFrame so tile movement is smooth and
+    we avoid overloading the main thread with redundant style writes.
+  */
+  if (drag.framePending) return;
+  drag.framePending = true;
 
-  if (!drag.hasMoved && (Math.abs(dx) > 1 || Math.abs(dy) > 1)) {
-    drag.hasMoved = true;
-    drag.el.classList.add('dragging');
-  }
+  requestAnimationFrame(() => {
+    drag.framePending = false;
+    if (!drag.active || !drag.el) return;
+    const dx = drag.pendingDx;
+    const dy = drag.pendingDy;
 
-  if (drag.axis === 'x') {
-    let px = dx;
-    if (drag.dir === 1) px = Math.max(0, Math.min(px, drag.tileSize));
-    else px = Math.min(0, Math.max(px, -drag.tileSize));
-    drag.offsetX = px;
-    setTileDragOffset(drag.el, px, 0);
-  } else {
-    let py = dy;
-    if (drag.dir === 1) py = Math.max(0, Math.min(py, drag.tileSize));
-    else py = Math.min(0, Math.max(py, -drag.tileSize));
-    drag.offsetY = py;
-    setTileDragOffset(drag.el, 0, py);
-  }
+    if (!drag.hasMoved && (Math.abs(dx) > 1 || Math.abs(dy) > 1)) {
+      drag.hasMoved = true;
+      drag.el.classList.add('dragging');
+    }
+
+    if (drag.axis === 'x') {
+      let px = dx;
+      if (drag.dir === 1) px = Math.max(0, Math.min(px, drag.tileSize));
+      else px = Math.min(0, Math.max(px, -drag.tileSize));
+      drag.offsetX = px;
+      setTileDragOffset(drag.el, px, 0);
+    } else {
+      let py = dy;
+      if (drag.dir === 1) py = Math.max(0, Math.min(py, drag.tileSize));
+      else py = Math.min(0, Math.max(py, -drag.tileSize));
+      drag.offsetY = py;
+      setTileDragOffset(drag.el, 0, py);
+    }
+  });
 }
 
 function onPointerUp(e) {
@@ -1114,6 +1208,9 @@ function onPointerUp(e) {
   drag.tileSize = 0;
   drag.baseCol = 0;
   drag.baseRow = 0;
+  drag.framePending = false;
+  drag.pendingDx = 0;
+  drag.pendingDy = 0;
 }
 
 function initDrag() {
@@ -1124,11 +1221,7 @@ function initDrag() {
 }
 
 
-/* ==========================================================================
-   14. TIMER
-   Continuous second counter used for performance evaluation.
-   ========================================================================== */
-
+// Timer utilities.
 function startTimer() {
   stopTimer();
   state.timeSeconds = 0;
@@ -1147,16 +1240,13 @@ function stopTimer() {
 
 function updateTimerDisplay(animate = false) {
   dom.gameTimer.textContent = '\u23F1 ' + formatTime(state.timeSeconds);
-  if (animate) triggerTimerFeedback();
+  // Timer pulse looks nice, but we keep it optional for performance.
+  if (animate && PERFORMANCE.enableTimerPulse) triggerTimerFeedback();
 }
 
 
-/* ==========================================================================
-   15. GAME FLOW
-   High-level functions to control the state of the active puzzle session.
-   ========================================================================== */
-
-function startGame(puzzleId) {
+// Start a new puzzle run.
+async function startGame(puzzleId) {
   killGameIntro();
   clearCompletionState();
   closeAllModals();
@@ -1174,14 +1264,17 @@ function startGame(puzzleId) {
   showScreen('game');
   if (dom.puzzleGrid) {
     dom.puzzleGrid.style.setProperty('--puzzle-guide-image', `url('${state.boardImageSrc}')`);
+    dom.puzzleGrid.style.setProperty('--puzzle-grid-size', String(GRID));
   }
   createTiles();
   shuffleBoard();
   renderBoard(false);
-  playGameIntro();
+  // Intro animation is intentionally optional to keep startup snappy.
+  if (PERFORMANCE.enableGameIntro) playGameIntro();
   startTimer();
 }
 
+// Finish run: score, rank, and completion UI.
 function endGame() {
   killGameIntro();
   hidePuzzleReference();
@@ -1209,6 +1302,7 @@ function endGame() {
   startCompletionSequence(moves, time, state.lastResult.moveRank, state.lastResult.timeRank);
 }
 
+// Reset keeps same puzzle but reshuffles and restarts timer.
 function resetGame() {
   if (!state.currentPuzzle || state.isCompleting) return;
   killGameIntro();
@@ -1253,10 +1347,6 @@ function hidePuzzleReference() {
   renderBoard(false);
 }
 
-/* ==========================================================================
-   16. HELP MODAL
-   Allows the player to view the completed reference image during play.
-   ========================================================================== */
 
 function showHelpModal() {
   if (!state.currentPuzzle || state.isCompleting) return;
@@ -1272,11 +1362,6 @@ function initHelpModal() {
 }
 
 
-/* ==========================================================================
-   17. COMPLETE MODAL
-   Congratulatory modal displayed upon solve. Links to the leaderboard.
-   ========================================================================== */
-
 function showCompleteModal(moves, time, moveRank, timeRank) {
   dom.statMoves.textContent = moves;
   dom.statTime.textContent = formatTime(time);
@@ -1291,12 +1376,6 @@ function initCompleteModal() {
   dom.btnCplRestart.addEventListener('click', resetGame);
 }
 
-
-/* ==========================================================================
-   18. LEADERBOARD UI
-   Renders the local high-score table. Includes a highlighted 'YOU' row 
-   to help users identify their current standing in the global rankings.
-   ========================================================================== */
 
 function showLeaderboard() {
   clearCompletionState();
@@ -1342,11 +1421,7 @@ function initLeaderboard() {
 }
 
 
-/* ==========================================================================
-   19. GAME BUTTONS
-   Connects the core UI controls.
-   ========================================================================== */
-
+// Wire in-game controls and hold-to-preview behavior.
 function initGameButtons() {
   dom.btnBack.addEventListener('click', () => {
     if (state.isCompleting) return;
@@ -1392,6 +1467,7 @@ function bindTactileButton(el) {
     }
   };
 
+  // Using GSAP here keeps the press movement smooth even when transforms already exist.
   el.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     el.classList.add('is-pressed');
@@ -1412,6 +1488,7 @@ function bindTactileButton(el) {
   el.addEventListener('blur', release);
 }
 
+// Global click sound for any button in the app.
 function initGlobalButtonSound() {
   document.addEventListener('click', (e) => {
     const button = e.target.closest('button');
@@ -1419,6 +1496,7 @@ function initGlobalButtonSound() {
     playSound('buttonClick');
   });
 }
+// Dev shortcut to force a solved board.
 function debugSolve() {
   if (!state.isPlaying || !state.currentPuzzle) return;
   for (let i = 0; i < TILES - 1; i++) state.board[i] = i + 1;
@@ -1429,16 +1507,13 @@ function debugSolve() {
 }
 
 
-/* ==========================================================================
-   20. INIT
-   Entry point. Sets up the application and starts at the splash screen.
-   ========================================================================== */
-
+// App bootstrap.
 function initApp() {
   cacheDom();
   initSounds();
   initGlobalButtonSound();
   $$('button').forEach(bindTactileButton);
+  if (dom.puzzleGrid) dom.puzzleGrid.style.setProperty('--puzzle-grid-size', String(GRID));
   document.body.classList.toggle('has-gsap-intro', Boolean(window.gsap));
   initSplash();
   initNameEntry();
@@ -1453,5 +1528,6 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
+
 
 

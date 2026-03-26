@@ -154,14 +154,14 @@ input {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: .04em;
-  border-radius: clamp(16px, 38%, 30px);
+  border-radius: clamp(20px, 5vmin, 42px);
   color: #fff;
   transition: transform 220ms cubic-bezier(.22, .74, .28, 1), box-shadow 220ms ease;
   white-space: nowrap;
 }
 
 .btn-debug {
-  border-radius: clamp(16px, 38%, 30px);
+  border-radius: clamp(20px, 5vmin, 42px);
 }
 .btn:active,
 .btn.is-pressed {
