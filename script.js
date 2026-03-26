@@ -113,8 +113,8 @@ const PUZZLES = [
   { id:'land-3', title:'St Boniface Cathedral',           description:'The remarkable facade and grounds of St Boniface Cathedral, a major historic landmark.', category:'landscapes', image: "images/landscape-3.jpg" },
   { id:'land-4', title:'Canadian Museum of Human Rights', description:'The striking modern design of the Canadian Museum for Human Rights in downtown Winnipeg.', category:'landscapes', image: "images/landscape-4.jpg" },
   // Movies
-  { id:'movie-1', title:'Kung Fu Panda',   description:'Po trains under Master Shifu and the Furious Five to become the Dragon Warrior.', category:'movies', image: "images/kung_fu_panda.jpg" },
-  { id:'movie-2', title:'Ratatouille',     description:'Remy, a rat with a passion for cooking, helps create unforgettable dishes in Paris.',   category:'movies', image: "images/rataouille.jpg" },
+  { id:'movie-1', title:'Zootopia',   description:'Detective Judy Hops and Nick Wild from Zootpia solving a crime one again.', category:'movies', image: "images/zootopia.jpg" },
+  { id:'movie-2', title:'Ratatouille',     description:'Remy, a rat with a passion for cooking, helps create unforgettable dishes in Paris.',   category:'movies', image: "images/ratatoullie.jpg" },
   { id:'movie-3', title:'Shrek',           description:'Shrek and Donkey set out on a hilarious adventure through a fairy-tale world.',         category:'movies', image: "images/shrek.jpg" },
   { id:'movie-4', title:'Despicable Me',   description:'Gru and his mischievous Minions pull off wild schemes that turn into family moments.',    category:'movies', image: "images/despicable.jpg" },
   // Animals
