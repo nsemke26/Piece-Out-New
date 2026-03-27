@@ -128,6 +128,11 @@ input {
   animation: subtleRiseIn 280ms ease-out both;
 }
 
+body.has-gsap-intro .screen.active,
+body.has-gsap-intro .screen.active>*:not(.background-logo):not(.background-logo-2):not(.hint-pill) {
+  animation: none !important;
+}
+
 .modal-overlay.open {
   animation: subtleFadeIn 220ms ease-out both;
 }
@@ -156,16 +161,23 @@ input {
   letter-spacing: .04em;
   border-radius: clamp(20px, 5vmin, 42px);
   color: #fff;
-  transition: transform 220ms cubic-bezier(.22, .74, .28, 1), box-shadow 220ms ease;
+  transition: transform 220ms cubic-bezier(.22, .74, .28, 1), box-shadow 220ms ease, filter 220ms ease;
   white-space: nowrap;
 }
 
 .btn-debug {
   border-radius: clamp(20px, 5vmin, 42px);
 }
+
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
 .btn:active,
 .btn.is-pressed {
-  box-shadow: none;
+  box-shadow: none !important;
+  transform: translateY(var(--btn-shadow-depth)) !important;
 }
 
 .btn-icon {

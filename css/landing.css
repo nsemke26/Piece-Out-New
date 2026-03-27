@@ -12,17 +12,39 @@
 */
 .background-logo {
   position: absolute;
-  top: 0;
-  left: 0;
-  height: 50%;
+  top: -20px;
+  left: -20px;
+  height: 55%;
+  animation: vibrate-attention 3s infinite;
 }
 
 .background-logo-2 {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  height: 50%;
+  bottom: -20px;
+  right: -20px;
+  height: 55%;
   transform: rotate(180deg);
+  animation: vibrate-attention-2 4s infinite;
+}
+
+@keyframes vibrate-attention {
+  0%, 82% { transform: translate(0, 0) rotate(0deg); }
+  85% { transform: translate(-4px, 4px) rotate(-1deg); }
+  88% { transform: translate(4px, -3px) rotate(2deg); }
+  91% { transform: translate(-4px, -4px) rotate(-2deg); }
+  94% { transform: translate(4px, 3px) rotate(1deg); }
+  97% { transform: translate(-2px, 2px) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes vibrate-attention-2 {
+  0%, 86% { transform: rotate(180deg) translate(0, 0); }
+  88% { transform: rotate(180deg) translate(-4px, 4px) rotate(-1deg); }
+  90% { transform: rotate(180deg) translate(4px, -3px) rotate(2deg); }
+  92% { transform: rotate(180deg) translate(-4px, -4px) rotate(-2deg); }
+  94% { transform: rotate(180deg) translate(4px, 3px) rotate(1deg); }
+  96% { transform: rotate(180deg) translate(-2px, 2px) rotate(0deg); }
+  98%, 100% { transform: rotate(180deg) translate(0, 0); }
 }
 
 .splash-content {
@@ -51,6 +73,10 @@
   font-size: clamp(6rem, 16vw, 28rem);
 }
 
+.text-logo__row span {
+  display: inline-block;
+}
+
 .text-logo__dash {
   font-size: 0.4em;
   margin-left: 0.2em;
@@ -65,10 +91,6 @@
   font-weight: 900;
   text-transform: uppercase;
   gap: 0.5em;
-}
-
-.btn-start-game:active {
-  transform: translateY(3px);
 }
 
 .hint-pill {
@@ -89,12 +111,30 @@
   }
 }
 
+@keyframes pulse-hint {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateX(-50%) scale(1.05);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+  }
+}
+
 #screen-splash .hint-pill {
   position: absolute;
   bottom: clamp(1.8rem, 4.2vh, 2.8rem);
   left: 50%;
   transform: translateX(-50%);
   margin-top: 0;
+  animation: pulse-hint 2s infinite ease-in-out;
 }
 
 .touch-icon {
@@ -159,9 +199,10 @@
   color: var(--dark);
 }
 
-.name-card__input::placeholder { color: #aaa; }
+.name-card__input::placeholder {
+  color: #aaa;
+}
 
 #screen-name .btn--wide {
   max-width: 100%;
 }
-
