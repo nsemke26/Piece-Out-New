@@ -1,45 +1,9 @@
-/* =====================================================
-   PIECE OUT  -  4×4 Sliding Puzzle Game
-   Vanilla JS  |  Touch + Mouse  |  localStorage LB
-
-   This script handles the entire application lifecycle, from 
-   the splash screen to the core puzzle engine and the 
-   persistent leaderboard system.
-
-   SECTIONS:
-   1. DATA           – Grid constants, puzzle catalog, category list, and name banks.
-   2. STATE          – Centralized state management for the active game session.
-   3. DOM CACHE      – Efficient element querying and storage.
-   4. HELPERS        – Utility functions for formatting, randomizing, and scoring.
-   5. PLAYER         – LocalStorage management for persistent player profiles.
-   6. LEADERBOARD    – CRUD operations for the local high-score system.
-   7. NAVIGATION     – Screen switching and modal overlay management.
-   8. SPLASH         – Entry point logic and auto-login checks.
-   9. NAME ENTRY     – User onboarding and guest account generation.
-  10. CATEGORIES     – Dynamic rendering of the puzzle selection interface.
-  11. DETAILS MODAL  – Pre-game puzzle previews.
-  12. PUZZLE ENGINE  – Core 4x4 grid logic, shuffling, and win-state detection.
-  13. DRAG / TOUCH   – Advanced pointer-event handlers for intuitive gameplay.
-  14. TIMER          – Accurate gameplay duration tracking.
-  15. GAME FLOW      – High-level orchestration of play, end, and reset cycles.
-  16. HELP MODAL     – In-game reference imagery for the player.
-  17. COMPLETE MODAL – Post-solve performance summary.
-  18. LEADERBOARD UI – Rendering the competitive global rankings.
-  19. GAME BUTTONS   – Controls for game navigation and debug tools.
-  20. INIT           – Application bootstrap and event wiring.
-   ===================================================== */
-
-
-/* ==========================================================================
-   1. DATA
-   Static configuration and the puzzle database. The catalog is organized by 
-   thematic categories to facilitate easy navigation and filtering.
-   ========================================================================== */
-
-const GRID = 4;                       // 4x4 grid dimensions
-const TILES = GRID * GRID;            // Total slots (15 tiles + 1 empty)
-const SHUFFLE_MOVES = 300;            // Number of random moves to ensure difficulty
-const IMG = './images/joaquin.png';    // Placeholder image used across the demo
+// Core puzzle settings (3x3 => 8 tiles + 1 empty slot).
+const GRID = 3;
+const TILES = GRID * GRID;
+const SHUFFLE_MOVES = 180;
+const IMG = './images/joaquin.png';
+// Animation timing knobs used across board/tile feedback.
 const MOTION = {
   transientClassResetMs: 420,
   tileRewardDelayMs: 140,
@@ -51,6 +15,7 @@ const MOTION = {
   completeSettleResetMs: 420,
   completeParticlesResetMs: 1320,
 };
+// Intro sequence timing for the game screen.
 const GAME_INTRO_MOTION = {
   backgroundOpacity: 0.5,
   backgroundDuration: 0.3,
@@ -94,18 +59,37 @@ const GAME_INTRO_MOTION = {
   readyAccentTimerScale: 1.035,
   readyAccentTimerY: -1,
 };
-
-// Defined categories for the sidebar navigation
+// Audio file paths and volume presets.
+const SOUND = {
+  puzzleSelectSrc: './sounds/puzzle-click.mp3',
+  puzzleCompleteSrc: './sounds/puzzle-complete.mp3',
+  buttonClickSrc: './sounds/button-click.mp3',
+  invalidMoveSrc: './sounds/invalid-move.mp3',
+  puzzleSelectVolume: 0.55,
+  puzzleCompleteVolume: 0.75,
+  buttonClickVolume: 0.42,
+  invalidMoveVolume: 0.62,
+};
+/*
+  Performance switches:
+  These are intentional "quality vs speed" toggles.
+  Keep them false for smooth play on slower laptops/phones, or set to true if
+  you want richer effects and your device handles them well.
+*/
+const PERFORMANCE = {
+  enableGameIntro: true,
+  enableTimerPulse: true,
+  enableCompletionParticles: true,
+};
+// Static game content.
 const CATEGORIES = [
-  { id: 'landscapes', name: 'Landscapes',        icon: 'ph-fill ph-mountains' },
-  { id: 'movies',     name: 'Movies',            icon: 'ph-fill ph-film-slate' },
-  { id: 'animals',    name: 'Animals',            icon: 'ph-fill ph-paw-print' },
-  { id: 'all',        name: 'All',                icon: 'ph-fill ph-puzzle-piece' },
-  { id: 'food',       name: 'Food',               icon: 'ph-fill ph-hamburger' },
-  { id: 'art',        name: 'Art',  icon: 'ph-fill ph-palette' },
+  { id: 'landscapes', name: 'Landscapes',        icon: 'ph ph-mountains' },
+  { id: 'movies',     name: 'Movies',            icon: 'ph ph-film-slate' },
+  { id: 'animals',    name: 'Animals',            icon: 'ph ph-paw-print' },
+  { id: 'all',        name: 'All',                icon: 'ph ph-puzzle-piece' },
+  { id: 'food',       name: 'Food',               icon: 'ph ph-hamburger' },
+  { id: 'art',        name: 'Art',  icon: 'ph ph-palette' },
 ];
-
-// The full puzzle database
 const PUZZLES = [
   // Landscapes
   { id:'land-1', title:'Royal Canadian Mint',             description:'An iconic view of the Royal Canadian Mint, known for producing circulation and collector coins.',  category:'landscapes', image: "images/landscape-1.jpg" },
@@ -133,8 +117,6 @@ const PUZZLES = [
   { id:'art-3', title:'Water Lilies',       description:"Monet's serene scene of floating lilies reflects light, color, and movement across the water's surface.",       category:'art', image: "images/art-3.jpeg" },
   { id:'art-4', title:'American Gothic',    description:"Grant Wood's famous portrait presents a stern farmer and his daughter before a simple rural home.",             category:'art', image: "images/art-4.jpg" },
 ];
-
-// Word banks for generating creative, themed random names
 const NAME_PRE = [
   'Pixel','Debug','Serif','Vector','Flex','Grid','Retro','Glitch','Based',
   'Sigma','Goated','Epic','Dank','Cracked','Sudo','Async','Turbo','Mega',
@@ -148,41 +130,41 @@ const NAME_SUF = [
 ];
 
 
-/* ==========================================================================
-   2. STATE
-   The Single Source of Truth for the application. All UI updates and game 
-   logic transformations should derive from or update this object.
-   ========================================================================== */
-
+// App state for current session/playthrough.
 const state = {
   playerName: '',
   screen: 'splash',
   selectedCategory: 'landscapes',
   currentPuzzle: null,
-  board: [],           // Flat array representing the 4x4 grid (0 is the empty slot)
+  board: [],
+  holdPreviewBoard: null,
+  holdPreviewActive: false,
   moves: 0,
   timeSeconds: 0,
   timerInterval: null,
   isPlaying: false,
   isCompleting: false,
+  startSessionId: null,
+  boardImageSrc: '',
   completeModalTimeout: null,
-  lastResult: null,    // Results of the last completed puzzle
+  lastResult: null,
 };
 
-
-/* ==========================================================================
-   3. DOM CACHE
-   A simple object-based cache to avoid expensive document.querySelector 
-   calls during high-frequency events like dragging.
-   ========================================================================== */
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 const dom = {};
+const sounds = {
+  puzzleSelect: null,
+  puzzleComplete: null,
+  buttonClick: null,
+  invalidMove: null,
+};
+const squareImageCache = new Map();
 
+// Cache all DOM references once to avoid repeated querySelector calls.
 function cacheDom() {
-  // Navigation Screens
   dom.screens        = $$('.screen');
   dom.splash         = $('#screen-splash');
   dom.btnSplash      = $('#btn-splash');
@@ -195,8 +177,6 @@ function cacheDom() {
   dom.catMain        = $('.cat-main');
   dom.catGrid        = $('#cat-grid');
   dom.btnRandom      = $('#btn-random');
-
-  // Game Interface
   dom.gameScreen     = $('#screen-game');
   dom.gameHeader     = $('.game-header');
   dom.gameTitle      = $('.game-header__title');
@@ -209,12 +189,11 @@ function cacheDom() {
   dom.gameFooterCenter = $('.game-footer__center');
   dom.btnReset       = $('#btn-reset');
   dom.btnHelp        = $('#btn-help');
-  dom.gameActionButtons = [dom.btnBack, dom.btnReset, dom.btnHelp].filter(Boolean);
+  dom.btnCompare     = $('#btn-compare');
+  dom.gameActionButtons = [dom.btnBack, dom.btnReset, dom.btnHelp, dom.btnCompare].filter(Boolean);
   dom.gameBackgroundShapes = Array.from(
     $$('#screen-game .background-logo, #screen-game .background-logo-2')
   );
-
-  // Leaderboard Interface
   dom.lbScreen       = $('#screen-leaderboard');
   dom.lbImage        = $('#lb-image');
   dom.lbTitle        = $('#lb-title');
@@ -223,15 +202,11 @@ function cacheDom() {
   dom.lbYou          = $('#lb-you');
   dom.btnLbRestart   = $('#btn-lb-restart');
   dom.btnLbHome      = $('#btn-lb-home');
-
-  // Modals – Help
   dom.modalHelp      = $('#modal-help');
   dom.helpImage      = $('#help-image');
   dom.helpName       = $('#help-name');
   dom.helpDesc       = $('#help-desc');
   dom.btnHelpClose   = $('#btn-help-close');
-
-  // Modals – Complete
   dom.modalComplete  = $('#modal-complete');
   dom.statMoves      = $('#stat-moves');
   dom.statTime       = $('#stat-time');
@@ -240,8 +215,6 @@ function cacheDom() {
   dom.btnCplLb       = $('#btn-cpl-lb');
   dom.btnCplCats     = $('#btn-cpl-cats');
   dom.btnCplRestart  = $('#btn-cpl-restart');
-
-  // Modals – Details
   dom.modalDetails   = $('#modal-details');
   dom.detailsImage   = $('#details-image');
   dom.detailsName    = $('#details-name');
@@ -252,32 +225,84 @@ function cacheDom() {
 }
 
 
-/* ==========================================================================
-   4. HELPERS
-   Small, reusable utility functions to keep core logic clean and readable.
-   ========================================================================== */
-
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+// Fisher-Yates shuffle keeps the "All" page feeling fresh on each visit.
+function shuffle(list) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
-// Creates a composite name from the pre/suf word banks
+// Build an Audio instance with common defaults.
+function createSound(src, volume) {
+  const audio = new Audio(src);
+  audio.preload = 'auto';
+  audio.volume = volume;
+  return audio;
+}
+
+// Preload sounds at startup so feedback feels instant.
+function initSounds() {
+  sounds.puzzleSelect = createSound(SOUND.puzzleSelectSrc, SOUND.puzzleSelectVolume);
+  sounds.puzzleComplete = createSound(SOUND.puzzleCompleteSrc, SOUND.puzzleCompleteVolume);
+  sounds.buttonClick = createSound(SOUND.buttonClickSrc, SOUND.buttonClickVolume);
+  sounds.invalidMove = createSound(SOUND.invalidMoveSrc, SOUND.invalidMoveVolume);
+}
+
+// Safe play helper; ignores autoplay errors from the browser.
+function playSound(soundKey) {
+  const audio = sounds[soundKey];
+  if (!audio) return;
+  audio.currentTime = 0;
+  const maybePromise = audio.play();
+  if (maybePromise && typeof maybePromise.catch === 'function') {
+    maybePromise.catch(() => {});
+  }
+}
+
+// Crop source image to square once, then reuse from cache.
+function getSquareImageSrc(src) {
+  if (squareImageCache.has(src)) return squareImageCache.get(src);
+
+  const promise = new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      const sx = Math.floor((img.naturalWidth - side) / 2);
+      const sy = Math.floor((img.naturalHeight - side) / 2);
+      const canvas = document.createElement('canvas');
+      canvas.width = side;
+      canvas.height = side;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(src);
+        return;
+      }
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, side, side);
+      resolve(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.onerror = () => resolve(src);
+    img.src = src;
+  });
+
+  squareImageCache.set(src, promise);
+  return promise;
+}
 function generateName() {
   return rand(NAME_PRE) + rand(NAME_SUF) + randInt(0, 99);
 }
-
-// Converts seconds into a user-friendly M:SS format
 function formatTime(s) {
   const m = Math.floor(s / 60);
   const sec = s % 60;
   return m + ':' + String(sec).padStart(2, '0');
 }
-
-// Custom scoring algorithm: moves are prioritized, time acts as a minor penalty
 function calculateScore(moves, timeSec) {
   return moves + Math.floor(timeSec * 1.5);
 }
-
-// Data fetching helpers
 function puzzlesForCategory(catId) {
   if (catId === 'all') return [...PUZZLES];
   return PUZZLES.filter(p => p.category === catId);
@@ -288,11 +313,7 @@ function getPuzzle(id) {
 }
 
 
-/* ==========================================================================
-   5. PLAYER (localStorage)
-   Persists player data across browser sessions to improve UX on return.
-   ========================================================================== */
-
+// localStorage helpers for player identity.
 const PLAYER_KEY = 'pieceout_player';
 
 function loadPlayer() {
@@ -310,20 +331,13 @@ function savePlayer(name) {
 }
 
 
-/* ==========================================================================
-   6. LEADERBOARD (localStorage, per puzzle)
-   Handles storage and retrieval of high scores. Each puzzle has its own 
-   dedicated leaderboard to maintain granular competitiveness.
-   ========================================================================== */
-
+// Leaderboard storage is scoped by puzzle id.
 function lbKey(puzzleId) { return 'pieceout_lb_' + puzzleId; }
 
 function getLeaderboard(puzzleId) {
   const raw = localStorage.getItem(lbKey(puzzleId));
   return raw ? JSON.parse(raw) : [];
 }
-
-// Saves a new entry, sorts by score, and trims the list to the top 50
 function saveLeaderboardEntry(puzzleId, entry) {
   const lb = getLeaderboard(puzzleId);
   lb.push(entry);
@@ -334,11 +348,7 @@ function saveLeaderboardEntry(puzzleId, entry) {
 }
 
 
-/* ==========================================================================
-   7. NAVIGATION
-   Orchestrates screen transitions by toggling visibility classes.
-   ========================================================================== */
-
+// Shared screen/modal visibility helpers.
 function showScreen(id) {
   if (state.screen === 'game' && id !== 'game') killGameIntro();
   dom.screens.forEach(s => s.classList.remove('active'));
@@ -372,12 +382,6 @@ function closeNameOverlay() {
 }
 
 
-/* ==========================================================================
-   8. SPLASH
-   The application landing point. Checks for existing user profiles to 
-   optionally skip the name entry process.
-   ========================================================================== */
-
 function initSplash() {
   const go = () => {
     openNameOverlay();
@@ -385,12 +389,6 @@ function initSplash() {
   dom.btnSplash.addEventListener('click', (e) => { e.stopPropagation(); go(); });
 }
 
-
-/* ==========================================================================
-   9. NAME ENTRY
-   Validates and saves player identity. Guest accounts provide a friction-free 
-   path to gameplay while still maintaining a persistent identity for the LB.
-   ========================================================================== */
 
 function initNameEntry() {
   dom.btnStartNamed.addEventListener('click', () => {
@@ -419,80 +417,118 @@ function initNameEntry() {
 }
 
 
-/* ==========================================================================
-   10. CATEGORIES
-   Populates the category navigation and puzzle grid. Uses a template-based 
-   approach to dynamically generate cards from the PUZZLES data array.
-   ========================================================================== */
-
+// Build category sidebar and puzzle cards from data config.
 function renderCategories() {
+  // One call updates theme + sidebar state + cards in a predictable order.
+  applyCategoryTheme(state.selectedCategory);
   renderSidebar();
   renderCategoryGrid(state.selectedCategory);
 }
 
+function applyCategoryTheme(catId) {
+  if (!dom.catScreen) return;
+  // CSS theme rules read this data attribute and map it to color variables.
+  dom.catScreen.dataset.theme = catId;
+}
+
 function renderSidebar() {
-  dom.catSidebar.innerHTML = '';
-  CATEGORIES.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (cat.id === state.selectedCategory ? ' active' : '');
-    const iconMarkup = cat.iconClass
-      ? `<i class="${cat.iconClass}" aria-hidden="true"></i>`
-      : (typeof cat.icon === 'string' && cat.icon.includes('ph-'))
-        ? `<i class="${cat.icon}" aria-hidden="true"></i>`
-        : cat.icon;
-    btn.innerHTML = `<span class="cat-btn__icon">${iconMarkup}</span> ${cat.name}`;
-    btn.addEventListener('click', () => {
-      state.selectedCategory = cat.id;
-      renderCategories();
+  if (!dom.catSidebar.childElementCount) {
+    const frag = document.createDocumentFragment();
+    CATEGORIES.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-btn';
+      btn.dataset.catId = cat.id;
+      const iconMarkup = cat.iconClass
+        ? `<i class="${cat.iconClass}" aria-hidden="true"></i>`
+        : (typeof cat.icon === 'string' && cat.icon.includes('ph-'))
+          ? `<i class="${cat.icon}" aria-hidden="true"></i>`
+          : cat.icon;
+      btn.innerHTML = `<span class="cat-btn__icon">${iconMarkup}</span> ${cat.name}`;
+      btn.addEventListener('click', () => {
+        if (state.selectedCategory === cat.id) return;
+        state.selectedCategory = cat.id;
+        applyCategoryTheme(state.selectedCategory);
+        updateSidebarActive();
+        renderCategoryGrid(state.selectedCategory);
+      });
+      bindTactileButton(btn);
+      frag.appendChild(btn);
     });
-    dom.catSidebar.appendChild(btn);
+    dom.catSidebar.appendChild(frag);
+  }
+  updateSidebarActive();
+}
+
+function updateSidebarActive() {
+  Array.from(dom.catSidebar.children).forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.catId === state.selectedCategory);
   });
 }
 
 function renderCategoryGrid(catId) {
-  const puzzles = puzzlesForCategory(catId);
+  // For "All", shuffle list order so users do not always see the same first cards.
+  const puzzles = catId === 'all'
+    ? shuffle(puzzlesForCategory(catId))
+    : puzzlesForCategory(catId);
   dom.catScreen.classList.toggle('screen-categories--four', puzzles.length === 4);
   dom.catScreen.classList.toggle('screen-categories--all', catId === 'all');
   if (catId === 'all' && dom.catMain) dom.catMain.scrollTop = 0;
-  dom.catGrid.innerHTML = '';
+  const frag = document.createDocumentFragment();
   puzzles.forEach(pz => {
     const card = document.createElement('div');
     card.className = 'puzzle-card';
+    card.dataset.id = pz.id;
+    card.dataset.category = pz.category;
     card.innerHTML = `
-      <div class="puzzle-card__img" style="background-image:url('${pz.image}')"></div>
+      <div class="puzzle-card__img" data-action="start" style="background-image:url('${pz.image}')"></div>
       <div class="puzzle-card__footer">
         <span class="puzzle-card__title">${pz.title}</span>
         <button class="puzzle-card__details" data-id="${pz.id}">DETAILS</button>
       </div>`;
+    const detailsBtn = card.querySelector('.puzzle-card__details');
+    // Reuse the same tactile press interaction used by all app buttons.
+    bindTactileButton(detailsBtn);
 
-    card.querySelector('.puzzle-card__img').addEventListener('click', () => startGame(pz.id));
-    card.querySelector('.puzzle-card__details').addEventListener('click', (e) => {
-      e.stopPropagation();
-      showDetails(pz.id);
-    });
-
-    dom.catGrid.appendChild(card);
+    frag.appendChild(card);
   });
+  dom.catGrid.replaceChildren(frag);
 }
 
 function initCategories() {
+  /*
+    Event delegation keeps this fast:
+    Instead of attaching handlers to every card on every render, one listener
+    on the grid handles both "open details" and "start game" clicks.
+  */
+  dom.catGrid.addEventListener('click', (e) => {
+    const detailsBtn = e.target.closest('.puzzle-card__details');
+    if (detailsBtn) {
+      e.stopPropagation();
+      showDetails(detailsBtn.dataset.id);
+      return;
+    }
+
+    const imageEl = e.target.closest('.puzzle-card__img');
+    if (!imageEl) return;
+    const card = imageEl.closest('.puzzle-card');
+    if (!card?.dataset.id) return;
+    playSound('puzzleSelect');
+    startGame(card.dataset.id);
+  });
+
   dom.btnRandom.addEventListener('click', () => {
     const puzzles = puzzlesForCategory(state.selectedCategory);
     if (!puzzles.length) return;
     const chosen = rand(puzzles);
+    playSound('puzzleSelect');
     startGame(chosen.id);
   });
 }
 
 
-/* ==========================================================================
-   11. DETAILS MODAL
-   Contextual preview of a puzzle before starting. Shows descriptions and 
-   category tags.
-   ========================================================================== */
-
 let detailsPuzzleId = null;
 
+// Track selected puzzle id before user confirms Play in details modal.
 function showDetails(puzzleId) {
   const pz = getPuzzle(puzzleId);
   if (!pz) return;
@@ -508,23 +544,18 @@ function showDetails(puzzleId) {
 function initDetailsModal() {
   dom.btnDetailsPlay.addEventListener('click', () => {
     closeModal('details');
-    if (detailsPuzzleId) startGame(detailsPuzzleId);
+    if (detailsPuzzleId) {
+      playSound('puzzleSelect');
+      startGame(detailsPuzzleId);
+    }
   });
   dom.btnDetailsClose.addEventListener('click', () => closeModal('details'));
 }
 
 
-/* ==========================================================================
-   12. PUZZLE ENGINE
-   Core game mechanics. Utilizes background-position CSS to slice a single 
-   image into grid tiles. Employs random valid-move shuffling to ensure 
-   the puzzle is always solvable.
-   ========================================================================== */
-
-const tileEls = {};   // Maps tile numerical values to their DOM elements
+const tileEls = {};
 let gameIntroTl = null;
-
-// Determines adjacent indices in a flat array for a 2D grid
+// Adjacent cells in a flattened GRID*GRID board.
 function neighbors(pos) {
   const r = Math.floor(pos / GRID), c = pos % GRID;
   const out = [];
@@ -534,8 +565,7 @@ function neighbors(pos) {
   if (c < GRID - 1) out.push(pos + 1);
   return out;
 }
-
-// Shuffles from solved state using valid moves
+// Shuffle from solved state using valid moves, keeping puzzle solvable.
 function shuffleBoard() {
   state.board = [];
   for (let i = 1; i < TILES; i++) state.board.push(i);
@@ -561,9 +591,11 @@ function isSolved() {
   return state.board[TILES - 1] === 0;
 }
 
+// Create tile nodes and assign each tile its image slice.
 function createTiles() {
   dom.puzzleGrid.innerHTML = '';
   Object.keys(tileEls).forEach(k => delete tileEls[k]);
+  const tileImageSrc = state.boardImageSrc || state.currentPuzzle.image;
 
   for (let num = 1; num < TILES; num++) {
     const el = document.createElement('div');
@@ -574,8 +606,8 @@ function createTiles() {
     const srcCol = (num - 1) % GRID;
     const bx = (srcCol / (GRID - 1)) * 100;
     const by = (srcRow / (GRID - 1)) * 100;
-    el.style.backgroundImage = `url('${state.currentPuzzle.image}')`;
-    el.style.backgroundSize = '400% 400%';
+    el.style.backgroundImage = `url('${tileImageSrc}')`;
+    el.style.backgroundSize = `${GRID * 100}% ${GRID * 100}%`;
     el.style.backgroundPosition = `${bx}% ${by}%`;
 
     tileEls[num] = el;
@@ -868,6 +900,7 @@ function restartTransientClass(el, className, clearDelay = MOTION.transientClass
 }
 
 function triggerInvalidTileFeedback(el) {
+  playSound('invalidMove');
   restartTransientClass(el, 'is-invalid');
 }
 
@@ -939,10 +972,10 @@ function triggerCompletionTileSettle() {
 }
 
 function createCompletionParticles() {
-  if (prefersReducedMotion() || !dom.completeParticles) return;
+  // Particle effects are expensive, so they stay behind a performance toggle.
+  if (prefersReducedMotion() || !dom.completeParticles || !PERFORMANCE.enableCompletionParticles) return;
 
   const particles = [
-    // Outer ring
     { left: '0%', top: '12%', width: '20px', height: '20px', x: '-58px', y: '-70px', rotateStart: '-12deg', rotateEnd: '26deg', color: 'rgba(110, 211, 255, .96)', shape: 'square' },
     { left: '-2%', top: '26%', width: '26px', height: '26px', x: '-70px', y: '-30px', rotateStart: '-22deg', rotateEnd: '20deg', color: 'rgba(129, 118, 222, .92)', shape: 'squircle' },
     { left: '-3%', top: '42%', width: '34px', height: '16px', x: '-74px', y: '-8px', rotateStart: '-12deg', rotateEnd: '18deg', color: 'rgba(255, 222, 45, .95)', shape: 'rect' },
@@ -957,7 +990,6 @@ function createCompletionParticles() {
     { left: '104%', top: '28%', width: '24px', height: '24px', x: '72px', y: '-24px', rotateStart: '18deg', rotateEnd: '-22deg', color: 'rgba(129, 118, 222, .92)', shape: 'squircle' },
     { left: '104%', top: '46%', width: '34px', height: '16px', x: '74px', y: '2px', rotateStart: '10deg', rotateEnd: '-18deg', color: 'rgba(255, 222, 45, .96)', shape: 'rect' },
     { left: '102%', top: '64%', width: '30px', height: '14px', x: '68px', y: '26px', rotateStart: '8deg', rotateEnd: '-14deg', color: 'rgba(249, 115, 22, .86)', shape: 'rect' },
-    // Near-board ring
     { left: '8%', top: '16%', width: '16px', height: '16px', x: '-34px', y: '-44px', rotateStart: '-8deg', rotateEnd: '18deg', color: 'rgba(110, 211, 255, .9)', shape: 'square' },
     { left: '3%', top: '34%', width: '18px', height: '18px', x: '-38px', y: '-12px', rotateStart: '-14deg', rotateEnd: '12deg', color: 'rgba(157, 100, 170, .88)', shape: 'squircle' },
     { left: '5%', top: '52%', width: '24px', height: '12px', x: '-34px', y: '6px', rotateStart: '-8deg', rotateEnd: '10deg', color: 'rgba(255, 222, 45, .9)', shape: 'rect' },
@@ -1023,8 +1055,7 @@ function startCompletionSequence(moves, time, moveRank, timeRank) {
     showCompleteModal(moves, time, moveRank, timeRank);
   }, reducedMotion ? MOTION.reducedCompleteModalDelayMs : MOTION.completeModalDelayMs);
 }
-
-// Syncs the DOM tile positions with the internal state array using CSS transforms
+// Sync logical board state into tile positions in the DOM.
 function renderBoard(animate) {
   for (let pos = 0; pos < TILES; pos++) {
     const num = state.board[pos];
@@ -1047,6 +1078,7 @@ function renderBoard(animate) {
   }
 }
 
+// Commit one legal move and evaluate progress/completion feedback.
 function performMove(tilePos) {
   const progressBefore = countSolvedTiles();
   const emptyPos = state.board.indexOf(0);
@@ -1061,13 +1093,7 @@ function performMove(tilePos) {
 }
 
 
-/* ==========================================================================
-   13. DRAG / TOUCH
-   Unified pointer events for smooth dragging and tapping. Includes 
-   directional snapping and axis constraints to mimic a physical sliding 
-   puzzle board.
-   ========================================================================== */
-
+// Pointer interaction state (tap + drag).
 const drag = {
   active: false,
   hasMoved: false,
@@ -1082,6 +1108,9 @@ const drag = {
   tileSize: 0,
   baseCol: 0,
   baseRow: 0,
+  framePending: false,
+  pendingDx: 0,
+  pendingDy: 0,
 };
 
 function onPointerDown(e) {
@@ -1117,27 +1146,41 @@ function onPointerDown(e) {
 
 function onPointerMove(e) {
   if (!drag.active) return;
-  const dx = e.clientX - drag.startX;
-  const dy = e.clientY - drag.startY;
+  drag.pendingDx = e.clientX - drag.startX;
+  drag.pendingDy = e.clientY - drag.startY;
+  /*
+    pointermove can fire much faster than the screen can paint.
+    We batch updates into requestAnimationFrame so tile movement is smooth and
+    we avoid overloading the main thread with redundant style writes.
+  */
+  if (drag.framePending) return;
+  drag.framePending = true;
 
-  if (!drag.hasMoved && (Math.abs(dx) > 1 || Math.abs(dy) > 1)) {
-    drag.hasMoved = true;
-    drag.el.classList.add('dragging');
-  }
+  requestAnimationFrame(() => {
+    drag.framePending = false;
+    if (!drag.active || !drag.el) return;
+    const dx = drag.pendingDx;
+    const dy = drag.pendingDy;
 
-  if (drag.axis === 'x') {
-    let px = dx;
-    if (drag.dir === 1) px = Math.max(0, Math.min(px, drag.tileSize));
-    else px = Math.min(0, Math.max(px, -drag.tileSize));
-    drag.offsetX = px;
-    setTileDragOffset(drag.el, px, 0);
-  } else {
-    let py = dy;
-    if (drag.dir === 1) py = Math.max(0, Math.min(py, drag.tileSize));
-    else py = Math.min(0, Math.max(py, -drag.tileSize));
-    drag.offsetY = py;
-    setTileDragOffset(drag.el, 0, py);
-  }
+    if (!drag.hasMoved && (Math.abs(dx) > 1 || Math.abs(dy) > 1)) {
+      drag.hasMoved = true;
+      drag.el.classList.add('dragging');
+    }
+
+    if (drag.axis === 'x') {
+      let px = dx;
+      if (drag.dir === 1) px = Math.max(0, Math.min(px, drag.tileSize));
+      else px = Math.min(0, Math.max(px, -drag.tileSize));
+      drag.offsetX = px;
+      setTileDragOffset(drag.el, px, 0);
+    } else {
+      let py = dy;
+      if (drag.dir === 1) py = Math.max(0, Math.min(py, drag.tileSize));
+      else py = Math.min(0, Math.max(py, -drag.tileSize));
+      drag.offsetY = py;
+      setTileDragOffset(drag.el, 0, py);
+    }
+  });
 }
 
 function onPointerUp(e) {
@@ -1170,6 +1213,9 @@ function onPointerUp(e) {
   drag.tileSize = 0;
   drag.baseCol = 0;
   drag.baseRow = 0;
+  drag.framePending = false;
+  drag.pendingDx = 0;
+  drag.pendingDy = 0;
 }
 
 function initDrag() {
@@ -1180,11 +1226,7 @@ function initDrag() {
 }
 
 
-/* ==========================================================================
-   14. TIMER
-   Continuous second counter used for performance evaluation.
-   ========================================================================== */
-
+// Timer utilities.
 function startTimer() {
   stopTimer();
   state.timeSeconds = 0;
@@ -1203,36 +1245,44 @@ function stopTimer() {
 
 function updateTimerDisplay(animate = false) {
   dom.gameTimer.textContent = '\u23F1 ' + formatTime(state.timeSeconds);
-  if (animate) triggerTimerFeedback();
+  // Timer pulse looks nice, but we keep it optional for performance.
+  if (animate && PERFORMANCE.enableTimerPulse) triggerTimerFeedback();
 }
 
 
-/* ==========================================================================
-   15. GAME FLOW
-   High-level functions to control the state of the active puzzle session.
-   ========================================================================== */
-
-function startGame(puzzleId) {
+// Start a new puzzle run.
+async function startGame(puzzleId) {
   killGameIntro();
   clearCompletionState();
   closeAllModals();
   const pz = getPuzzle(puzzleId);
   if (!pz) return;
+  const sessionId = `${pz.id}-${Date.now()}-${Math.random()}`;
+  state.startSessionId = sessionId;
   state.currentPuzzle = pz;
   state.moves = 0;
   state.isPlaying = true;
   state.lastResult = null;
+  state.boardImageSrc = await getSquareImageSrc(pz.image);
+  if (state.startSessionId !== sessionId) return;
 
   showScreen('game');
+  if (dom.puzzleGrid) {
+    dom.puzzleGrid.style.setProperty('--puzzle-guide-image', `url('${state.boardImageSrc}')`);
+    dom.puzzleGrid.style.setProperty('--puzzle-grid-size', String(GRID));
+  }
   createTiles();
   shuffleBoard();
   renderBoard(false);
-  playGameIntro();
+  // Intro animation is intentionally optional to keep startup snappy.
+  if (PERFORMANCE.enableGameIntro) playGameIntro();
   startTimer();
 }
 
+// Finish run: score, rank, and completion UI.
 function endGame() {
   killGameIntro();
+  hidePuzzleReference();
   state.isPlaying = false;
   stopTimer();
 
@@ -1242,8 +1292,6 @@ function endGame() {
 
   const entry = { player: state.playerName, moves, time, score, ts: Date.now() };
   const lb = saveLeaderboardEntry(state.currentPuzzle.id, entry);
-
-  // Calculate distinct ranks for moves, time, and combined score
   const byScore = [...lb].sort((a, b) => a.score - b.score);
   const byMoves = [...lb].sort((a, b) => a.moves - b.moves);
   const byTime  = [...lb].sort((a, b) => a.time  - b.time);
@@ -1255,14 +1303,17 @@ function endGame() {
     timeRank:    byTime.findIndex(e => e.ts === entry.ts) + 1
   };
 
+  playSound('puzzleComplete');
   startCompletionSequence(moves, time, state.lastResult.moveRank, state.lastResult.timeRank);
 }
 
+// Reset keeps same puzzle but reshuffles and restarts timer.
 function resetGame() {
   if (!state.currentPuzzle || state.isCompleting) return;
   killGameIntro();
   clearCompletionState();
   closeAllModals();
+  hidePuzzleReference();
   state.moves = 0;
   state.isPlaying = true;
   shuffleBoard();
@@ -1270,11 +1321,37 @@ function resetGame() {
   startTimer();
 }
 
+function showPuzzleReference() {
+  // While held, show a solved preview and restore the real board on release.
+  if (!state.currentPuzzle || state.isCompleting || state.holdPreviewActive) return;
+  if (!Array.isArray(state.board) || state.board.length !== TILES) return;
 
-/* ==========================================================================
-   16. HELP MODAL
-   Allows the player to view the completed reference image during play.
-   ========================================================================== */
+  state.holdPreviewBoard = [...state.board];
+  state.holdPreviewActive = true;
+  state.isPlaying = false;
+
+  for (let i = 0; i < TILES - 1; i++) state.board[i] = i + 1;
+  state.board[TILES - 1] = 0;
+
+  dom.puzzleGrid.classList.add('is-hold-preview', 'is-complete-rest');
+  renderBoard(false);
+}
+
+function hidePuzzleReference() {
+  if (!state.holdPreviewActive) return;
+
+  if (Array.isArray(state.holdPreviewBoard) && state.holdPreviewBoard.length === TILES) {
+    state.board = [...state.holdPreviewBoard];
+  }
+
+  state.holdPreviewBoard = null;
+  state.holdPreviewActive = false;
+  state.isPlaying = Boolean(state.currentPuzzle) && !state.isCompleting;
+
+  dom.puzzleGrid.classList.remove('is-hold-preview', 'is-complete-rest');
+  renderBoard(false);
+}
+
 
 function showHelpModal() {
   if (!state.currentPuzzle || state.isCompleting) return;
@@ -1290,11 +1367,6 @@ function initHelpModal() {
 }
 
 
-/* ==========================================================================
-   17. COMPLETE MODAL
-   Congratulatory modal displayed upon solve. Links to the leaderboard.
-   ========================================================================== */
-
 function showCompleteModal(moves, time, moveRank, timeRank) {
   dom.statMoves.textContent = moves;
   dom.statTime.textContent = formatTime(time);
@@ -1309,12 +1381,6 @@ function initCompleteModal() {
   dom.btnCplRestart.addEventListener('click', resetGame);
 }
 
-
-/* ==========================================================================
-   18. LEADERBOARD UI
-   Renders the local high-score table. Includes a highlighted 'YOU' row 
-   to help users identify their current standing in the global rankings.
-   ========================================================================== */
 
 function showLeaderboard() {
   clearCompletionState();
@@ -1360,33 +1426,62 @@ function initLeaderboard() {
 }
 
 
-/* ==========================================================================
-   19. GAME BUTTONS
-   Connects the core UI controls.
-   ========================================================================== */
-
+// Wire in-game controls and hold-to-preview behavior.
 function initGameButtons() {
   dom.btnBack.addEventListener('click', () => {
     if (state.isCompleting) return;
     clearCompletionState();
+    hidePuzzleReference();
     stopTimer();
     state.isPlaying = false;
     showScreen('categories');
     renderCategories();
   });
   dom.btnReset.addEventListener('click', resetGame);
-  [dom.btnBack, dom.btnReset, dom.btnHelp].forEach(bindTactileButton);
+  if (dom.btnCompare) {
+    const press = (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (dom.btnCompare.setPointerCapture) {
+        try { dom.btnCompare.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+      showPuzzleReference();
+    };
+    const release = () => hidePuzzleReference();
+    dom.btnCompare.addEventListener('pointerdown', press);
+    dom.btnCompare.addEventListener('pointerup', release);
+    dom.btnCompare.addEventListener('pointercancel', release);
+    dom.btnCompare.addEventListener('pointerleave', release);
+    dom.btnCompare.addEventListener('lostpointercapture', release);
+    dom.btnCompare.addEventListener('blur', release);
+  }
+  [dom.btnBack, dom.btnReset, dom.btnHelp, dom.btnCompare].forEach(bindTactileButton);
   if ($('#btn-debug-solve')) $('#btn-debug-solve').addEventListener('click', debugSolve);
 }
 
 function bindTactileButton(el) {
   if (!el) return;
+  if (el.dataset.tactileBound === '1') return;
+  el.dataset.tactileBound = '1';
+  const release = () => {
+    el.classList.remove('is-pressed');
+    if (window.gsap) {
+      gsap.killTweensOf(el);
+      gsap.to(el, { y: 0, duration: 0.14, ease: 'power2.out' });
+    } else {
+      el.style.transform = '';
+    }
+  };
 
-  const release = () => el.classList.remove('is-pressed');
-
+  // Using GSAP here keeps the press movement smooth even when transforms already exist.
   el.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     el.classList.add('is-pressed');
+    if (window.gsap) {
+      gsap.killTweensOf(el);
+      gsap.to(el, { y: 6, duration: 0.08, ease: 'power2.out' });
+    } else {
+      el.style.transform = 'translateY(6px)';
+    }
     if (el.setPointerCapture) {
       try { el.setPointerCapture(e.pointerId); } catch (_) {}
     }
@@ -1398,7 +1493,15 @@ function bindTactileButton(el) {
   el.addEventListener('blur', release);
 }
 
-// Development helper to bypass gameplay for flow testing
+// Global click sound for any button in the app.
+function initGlobalButtonSound() {
+  document.addEventListener('click', (e) => {
+    const button = e.target.closest('button');
+    if (!button) return;
+    playSound('buttonClick');
+  });
+}
+// Dev shortcut to force a solved board.
 function debugSolve() {
   if (!state.isPlaying || !state.currentPuzzle) return;
   for (let i = 0; i < TILES - 1; i++) state.board[i] = i + 1;
@@ -1409,13 +1512,13 @@ function debugSolve() {
 }
 
 
-/* ==========================================================================
-   20. INIT
-   Entry point. Sets up the application and starts at the splash screen.
-   ========================================================================== */
-
+// App bootstrap.
 function initApp() {
   cacheDom();
+  initSounds();
+  initGlobalButtonSound();
+  $$('button').forEach(bindTactileButton);
+  if (dom.puzzleGrid) dom.puzzleGrid.style.setProperty('--puzzle-grid-size', String(GRID));
   document.body.classList.toggle('has-gsap-intro', Boolean(window.gsap));
   initSplash();
   initNameEntry();
@@ -1430,3 +1533,6 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
+
+
+
