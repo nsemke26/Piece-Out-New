@@ -232,16 +232,21 @@
     <div id="modal-help" class="modal-overlay">
       <div class="modal-card modal-card--help">
         <button id="btn-help-close" class="modal-card__close" aria-label="Close Help Modal">&#10005;</button>
-        <h2 class="modal-card__title">Help</h2>
+        <!-- <div class="help-modal-span"></div> -->
+        <h2 id="help-name" class="help-info__name"></h2>
         <div class="help-body">
           <div id="help-image" class="help-image"></div>
           <div class="help-info">
-            <h3 id="help-name" class="help-info__name"></h3>
+            <p class="help-info__attr-label"><strong>About Puzzle</strong></p>
             <p id="help-desc" class="help-info__desc"></p>
             <p class="help-info__attr-label"><strong>How to play</strong></p>
-            <p class="help-info__attr">
+            <p class="help-info__desc">
               Slide tiles by tapping or dragging them into the empty space.
               Arrange all pieces to complete the image.
+            </p>
+            <p class="help-info__attr-label"><strong>Attribute</strong></p>
+            <p class="help-info__desc help-image-ref">
+              this is a link
             </p>
           </div>
         </div>

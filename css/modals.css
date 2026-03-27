@@ -77,11 +77,20 @@
    Shows reference image and basic instructions.
    -------------------------------------------------------------------------- 
 */
+
+.modal-card--help{
+  background-color: var(--purple);
+  padding: clamp(1.5rem, 2vmin, 3rem) clamp(1rem, 1vmin, 1rem) clamp(1rem, 1vmin, 1rem)
+}
+
 .help-body {
   display: flex;
   gap: clamp(1rem, 2vmin, 2rem);
   align-items: flex-start;
   width: 100%;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
 }
 
 .help-image {
@@ -93,11 +102,15 @@
   flex-shrink: 0;
 }
 
+.help-image-ref{
+  color: var(--grey);
+}
+
 .help-info { flex: 1; }
 
 .help-info__name {
   font-size: clamp(1.2rem, 2.2vmin, 2rem);
-  margin-bottom: .3em;
+  /* margin-bottom: .5em; */
 }
 
 .help-info__desc {
@@ -208,6 +221,11 @@
     max-height: 88vh;
     padding: clamp(2.2rem, 3.2vmin, 4rem);
     gap: clamp(1.2rem, 1.8vmin, 2.2rem);
+  }
+
+  .modal-card--help{
+    background-color: var(--purple);
+    padding: clamp(1.5rem, 2vmin, 3rem) clamp(1rem, 1vmin, 1rem) clamp(1rem, 1vmin, 1rem)
   }
 
   .modal-card--complete {
