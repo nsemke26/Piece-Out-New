@@ -108,30 +108,30 @@ const CATEGORIES = [
 // The full puzzle database
 const PUZZLES = [
   // Landscapes
-  { id:'land-1', title:'Royal Canadian Mint',             description:'An iconic view of the Royal Canadian Mint, known for producing circulation and collector coins.', category:'landscapes', image: "images/landscape-1.jpg" },
-  { id:'land-2', title:'Exchange District',               description:'Historic warehouse architecture and vibrant streets from Winnipeg’s Exchange District.', category:'landscapes', image: "images/landscape-2.jpg" },
-  { id:'land-3', title:'St Boniface Cathedral',           description:'The remarkable facade and grounds of St Boniface Cathedral, a major historic landmark.', category:'landscapes', image: "images/landscape-3.jpg" },
-  { id:'land-4', title:'Canadian Museum of Human Rights', description:'The striking modern design of the Canadian Museum for Human Rights in downtown Winnipeg.', category:'landscapes', image: "images/landscape-4.jpg" },
+  { id:'land-1', title:'Royal Canadian Mint',             description:'An iconic view of the Royal Canadian Mint, known for producing circulation and collector coins.',  category:'landscapes', image: "images/landscape-1.jpg" },
+  { id:'land-2', title:'Exchange District',               description:'Historic warehouse architecture and vibrant streets from Winnipeg’s Exchange District.',           category:'landscapes', image: "images/landscape-2.jpg" },
+  { id:'land-3', title:'St Boniface Cathedral',           description:'The remarkable facade and grounds of St Boniface Cathedral, a major historic landmark.',           category:'landscapes', image: "images/landscape-3.jpg" },
+  { id:'land-4', title:'Canadian Museum of Human Rights', description:'The striking modern design of the Canadian Museum for Human Rights in downtown Winnipeg.',         category:'landscapes', image: "images/landscape-4.jpg" },
   // Movies
-  { id:'movie-1', title:'Zootopia',   description:'Detective Judy Hops and Nick Wild from Zootpia solving a crime one again.', category:'movies', image: "images/zootopia.jpg" },
-  { id:'movie-2', title:'Ratatouille',     description:'Remy, a rat with a passion for cooking, helps create unforgettable dishes in Paris.',   category:'movies', image: "images/ratatoullie.jpg" },
-  { id:'movie-3', title:'Shrek',           description:'Shrek and Donkey set out on a hilarious adventure through a fairy-tale world.',         category:'movies', image: "images/shrek.jpg" },
-  { id:'movie-4', title:'Despicable Me',   description:'Gru and his mischievous Minions pull off wild schemes that turn into family moments.',    category:'movies', image: "images/despicable.jpg" },
+  { id:'movie-1', title:'Zootopia',         description:'Detective Judy Hops and Nick Wild from Zootpia solving a crime one again.',                category:'movies', image: "images/zootopia.jpg" },
+  { id:'movie-2', title:'Ratatouille',      description:'Remy, a rat with a passion for cooking, helps create unforgettable dishes in Paris.',      category:'movies', image: "images/ratatoullie.jpg" },
+  { id:'movie-3', title:'Shrek',            description:'Shrek and Donkey set out on a hilarious adventure through a fairy-tale world.',            category:'movies', image: "images/shrek.jpg" },
+  { id:'movie-4', title:'Despicable Me',    description:'Gru and his mischievous Minions pull off wild schemes that turn into family moments.',     category:'movies', image: "images/despicable.jpg" },
   // Animals
-  { id:'anim-1', title:'Arctic Fox',        description:'The elegant white fox navigating through the frozen tundra.',                            category:'animals', image: IMG },
-  { id:'anim-2', title:'Tropical Parrot',   description:'A vibrant macaw perched on a branch in the lush rainforest.',                            category:'animals', image: IMG },
-  { id:'anim-3', title:'Ocean Dolphin',     description:'Playful dolphins leaping through crystal clear tropical waters.',                        category:'animals', image: IMG },
-  { id:'anim-4', title:'Safari Lion',       description:'The king of the savannah resting under an acacia tree at dusk.',                        category:'animals', image: IMG },
+  { id:'anim-1', title:'Small Birdie',      description:'The small bird sits in the water for a refreshing summer bath.',                           category:'animals', image: "images/animals-1.jpg" },
+  { id:'anim-2', title:'floppy Bunny',      description:'The bunny with floppy ears listening to the breeze and the summer sounds.',                category:'animals', image: "images/animals-2.jpg" },
+  { id:'anim-3', title:'Sleepy Kitty',      description:'The sleepy kitty is taking an afternoon nap in the sunlight.',                             category:'animals', image: "images/animals-3.jpg" },
+  { id:'anim-4', title:'Tuff Puppies',      description:'Two puppies posing on the beach, showing the world just how tuff they are.',               category:'animals', image: "images/animals-4.jpg" },
   // Food
-  { id:'food-1', title:'Pizza Perfection',  description:'A golden, cheesy pizza with fresh toppings and a perfectly crisp crust.',                 category:'food', image: "images/food-1-pizza.jpg" },
-  { id:'food-2', title:'Sushi Platter',     description:'A colorful assortment of sushi rolls and nigiri, neatly arranged and ready to serve.',   category:'food', image: "images/food-2-sushi.jpg" },
-  { id:'food-3', title:'Street Tacos',      description:'Fresh street-style tacos packed with vibrant fillings, herbs, and bold flavors.',         category:'food', image: "images/food-3-tacos.jpg" },
-  { id:'food-4', title:'Caesar Salad',      description:'A crisp Caesar salad with romaine, parmesan, croutons, and creamy dressing.',            category:'food', image: "images/food-4-caesar-salad.jpg" },
+  { id:'food-1', title:'Pizza Perfection',  description:'A golden, cheesy pizza with fresh toppings and a perfectly crisp crust.',                  category:'food', image: "images/food-1-pizza.jpg" },
+  { id:'food-2', title:'Sushi Platter',     description:'A colorful assortment of sushi rolls and nigiri, neatly arranged and ready to serve.',     category:'food', image: "images/food-2-sushi.jpg" },
+  { id:'food-3', title:'Street Tacos',      description:'Fresh street-style tacos packed with vibrant fillings, herbs, and bold flavors.',          category:'food', image: "images/food-3-tacos.jpg" },
+  { id:'food-4', title:'Caesar Salad',      description:'A crisp Caesar salad with romaine, parmesan, croutons, and creamy dressing.',              category:'food', image: "images/food-4-caesar-salad.jpg" },
   // Art
-  { id:'art-1', title:'The Great Wave',     description:"Hokusai's iconic woodblock print captures a towering wave curling over boats beneath Mount Fuji.", category:'art', image: "images/art-1.jpg" },
-  { id:'art-2', title:'Starry Night',       description:"Van Gogh's swirling night sky glows above a quiet village in one of the world's most recognizable paintings.", category:'art', image: "images/art-2.jpg" },
-  { id:'art-3', title:'Water Lilies',       description:"Monet's serene scene of floating lilies reflects light, color, and movement across the water's surface.", category:'art', image: "images/art-3.jpeg" },
-  { id:'art-4', title:'American Gothic',    description:"Grant Wood's famous portrait presents a stern farmer and his daughter before a simple rural home.", category:'art', image: "images/art-4.jpg" },
+  { id:'art-1', title:'The Great Wave',     description:"Hokusai's iconic woodblock print captures a towering wave curling over boats beneath Mount Fuji.",              category:'art', image: "images/art-1.jpg" },
+  { id:'art-2', title:'Starry Night',       description:"Van Gogh's swirling night sky glows above a quiet village in one of the world's most recognizable paintings.",  category:'art', image: "images/art-2.jpg" },
+  { id:'art-3', title:'Water Lilies',       description:"Monet's serene scene of floating lilies reflects light, color, and movement across the water's surface.",       category:'art', image: "images/art-3.jpeg" },
+  { id:'art-4', title:'American Gothic',    description:"Grant Wood's famous portrait presents a stern farmer and his daughter before a simple rural home.",             category:'art', image: "images/art-4.jpg" },
 ];
 
 // Word banks for generating creative, themed random names
