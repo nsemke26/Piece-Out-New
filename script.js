@@ -355,6 +355,11 @@ function showScreen(id) {
   const el = document.getElementById('screen-' + id);
   if (el) el.classList.add('active');
   state.screen = id;
+  
+  if (id === 'leaderboard') {
+    // Need a tiny delay for the DOM to reflow before animating leaderboard elements
+    requestAnimationFrame(() => playLeaderboardIntro());
+  }
 }
 
 function openModal(id) {
@@ -371,16 +376,35 @@ function closeAllModals() {
   $$('.modal-overlay').forEach(m => m.classList.remove('open'));
 }
 
+function playNameIntro() {
+  if (!window.gsap || prefersReducedMotion()) return;
+  const card = dom.nameScreen.querySelector('.name-card');
+  const title = card.querySelector('.name-card__title');
+  const input = card.querySelector('.name-card__input-wrap');
+  const btns = card.querySelectorAll('.btn');
+
+  gsap.fromTo(dom.nameScreen, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 });
+  gsap.fromTo(card, 
+    { y: 40, scale: 0.95 },
+    { y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.2)' }
+  );
+  gsap.fromTo([title, input, ...btns],
+    { y: 15, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 0.4, stagger: 0.06, ease: 'power2.out', clearProps: 'transform', delay: 0.1 }
+  );
+}
+
 function openNameOverlay() {
   dom.nameScreen.classList.add('open');
   dom.inputName.value = '';
+  dom.nameScreen.offsetHeight; // force reflow
   dom.inputName.focus();
+  playNameIntro();
 }
 
 function closeNameOverlay() {
   dom.nameScreen.classList.remove('open');
 }
-
 
 function initSplash() {
   const go = () => {
@@ -388,7 +412,6 @@ function initSplash() {
   };
   dom.btnSplash.addEventListener('click', (e) => { e.stopPropagation(); go(); });
 }
-
 
 function initNameEntry() {
   dom.btnStartNamed.addEventListener('click', () => {
@@ -416,6 +439,32 @@ function initNameEntry() {
   });
 }
 
+function playCategoriesIntro() {
+  if (!window.gsap || prefersReducedMotion() || state.screen !== 'categories') return;
+  const header = dom.catScreen.querySelector('.cat-header');
+  const sidebarBtns = dom.catSidebar.querySelectorAll('.cat-btn');
+  const cards = dom.catGrid.querySelectorAll('.puzzle-card');
+  const btnRandom = dom.catScreen.querySelector('#btn-random');
+
+  gsap.fromTo(header, 
+    { y: -20, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 0.4, ease: 'power2.out' }
+  );
+  gsap.fromTo(sidebarBtns,
+    { x: -20, autoAlpha: 0 },
+    { x: 0, autoAlpha: 1, duration: 0.4, stagger: 0.04, ease: 'power2.out', clearProps: 'transform' }
+  );
+  gsap.fromTo(cards,
+    { y: 30, autoAlpha: 0, scale: 0.95 },
+    { y: 0, autoAlpha: 1, scale: 1, duration: 0.5, stagger: 0.06, ease: 'back.out(1.2)', clearProps: 'transform' }
+  );
+  if (btnRandom) {
+    gsap.fromTo(btnRandom,
+      { y: 15, autoAlpha: 0 },
+      { y: 0, autoAlpha: 1, duration: 0.4, ease: 'power2.out', clearProps: 'transform', delay: 0.3 }
+    );
+  }
+}
 
 // Build category sidebar and puzzle cards from data config.
 function renderCategories() {
@@ -423,6 +472,8 @@ function renderCategories() {
   applyCategoryTheme(state.selectedCategory);
   renderSidebar();
   renderCategoryGrid(state.selectedCategory);
+  // Animate elements popping in elegantly when categories refresh/load
+  requestAnimationFrame(() => playCategoriesIntro());
 }
 
 function applyCategoryTheme(catId) {
@@ -1420,6 +1471,41 @@ function showLeaderboard() {
   showScreen('leaderboard');
 }
 
+function playLeaderboardIntro() {
+  if (!window.gsap || prefersReducedMotion() || state.screen !== 'leaderboard') return;
+  const panelLeft = dom.lbScreen.querySelector('.lb-info-panel');
+  const panelRight = dom.lbScreen.querySelector('.lb-main-panel');
+  const tableRows = dom.lbTbody.querySelectorAll('tr');
+  const youRow = dom.lbYou;
+  
+  // Left panel slides in
+  gsap.fromTo(panelLeft,
+    { x: -40, autoAlpha: 0 },
+    { x: 0, autoAlpha: 1, duration: 0.6, ease: 'power2.out', clearProps: 'transform' }
+  );
+  // Right panel slides in shortly after
+  gsap.fromTo(panelRight,
+    { x: 40, autoAlpha: 0 },
+    { x: 0, autoAlpha: 1, duration: 0.6, ease: 'power2.out', clearProps: 'transform', delay: 0.1 }
+  );
+  
+  // Stagger the leaderboard ranks
+  if (tableRows.length) {
+    gsap.fromTo(tableRows,
+      { y: 15, autoAlpha: 0 },
+      { y: 0, autoAlpha: 1, duration: 0.4, stagger: 0.04, ease: 'power2.out', delay: 0.3, clearProps: 'transform' }
+    );
+  }
+  
+  // Dramatically pop the "YOU" result row
+  if (youRow && youRow.style.display !== 'none') {
+    gsap.fromTo(youRow,
+      { y: 15, autoAlpha: 0, scale: 0.95 },
+      { y: 0, autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)', delay: 0.5, clearProps: 'transform' }
+    );
+  }
+}
+
 function initLeaderboard() {
   dom.btnLbRestart.addEventListener('click', () => { if (state.currentPuzzle) startGame(state.currentPuzzle.id); });
   dom.btnLbHome.addEventListener('click', () => { showScreen('categories'); renderCategories(); });
@@ -1511,6 +1597,108 @@ function debugSolve() {
   setTimeout(() => endGame(), 300);
 }
 
+let lastRingingSpan = null;
+
+function startRandomLetterRing() {
+  if (state.screen !== 'splash' || !window.gsap) return;
+  // Get all letters, excluding the decorative dash
+  const logoSpans = Array.from(dom.splash.querySelectorAll('.text-logo__row span'))
+                         .filter(span => span.textContent !== '-');
+  if (!logoSpans.length) return;
+
+  // Filter out the last letter that rang to guarantee variety
+  const availableSpans = logoSpans.filter(span => span !== lastRingingSpan);
+  const randomSpan = availableSpans[Math.floor(Math.random() * availableSpans.length)];
+  lastRingingSpan = randomSpan;
+  
+  gsap.to(randomSpan, {
+    rotation: () => gsap.utils.random(-12, 12),
+    y: -10,
+    duration: 0.08,
+    yoyo: true,
+    repeat: 3,
+    ease: "none",
+    clearProps: 'transform'
+  });
+
+  // Schedule the next ring between 1.5s and 4.5s
+  setTimeout(startRandomLetterRing, gsap.utils.random(1500, 4500));
+}
+
+function playSplashIntro() {
+  if (!window.gsap || prefersReducedMotion()) return;
+  const logoSpans = dom.splash.querySelectorAll('.text-logo__row span');
+  const logoContainer = dom.splash.querySelector('.text-logo');
+  const btn = dom.splash.querySelector('.btn-start-game');
+  const hint = dom.splash.querySelector('.hint-pill');
+  const bgLogos = dom.splash.querySelectorAll('.background-logo, .background-logo-2');
+
+  // Move them high up instantly to avoid fading in
+  const dropHeight = -(window.innerHeight || 800) - 100;
+  gsap.set(logoSpans, { autoAlpha: 1, scale: 1 });
+   // Hide background logos and interactive elements until the name animation is complete
+  gsap.set(bgLogos, { autoAlpha: 0 });
+  gsap.set(btn, { autoAlpha: 0, y: 25, scale: 0.9 });
+  gsap.set(hint, { autoAlpha: 0 });
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      setTimeout(startRandomLetterRing, gsap.utils.random(1500, 3000));
+    }
+  });
+
+  // Let them tumble, hit the ground, and literally bounce into place
+  tl.fromTo(logoSpans, 
+      {
+        y: dropHeight,
+        rotation: () => gsap.utils.random(-60, 60), // Start with a random heavy tilt
+        x: () => gsap.utils.random(-40, 40)         // Start slightly drifted horizontally
+      },
+      { 
+        y: 0, 
+        rotation: 0, 
+        x: 0,
+        duration: 1.4, 
+        ease: 'bounce.out', 
+        stagger: { amount: 0.8, from: 'random' } 
+      }, 
+      "+=0.15"
+    )
+    // The whole word vibrates and gets bigger to demonstrate completion
+    .addLabel("celebrate", "+=0.1")
+    .to(logoContainer, {
+      scale: 1.06,
+      duration: 0.42,
+      yoyo: true,
+      repeat: 1,
+      ease: "power1.inOut"
+    }, "celebrate")
+    .to(logoContainer, {
+      rotation: () => gsap.utils.random(-6, 6),
+      x: () => gsap.utils.random(-6, 6),
+      y: () => gsap.utils.random(-10, -2),
+      duration: 0.06,
+      yoyo: true,
+      repeat: 13, // Total 14 shakes * 0.06s = 0.84s (matches scale duration perfectly)
+      ease: "none",
+      clearProps: 'transform'
+    }, "celebrate")
+    
+    .addLabel("nameComplete")
+    .to(bgLogos, {
+      autoAlpha: 1,
+      duration: 1.2,
+      ease: 'power2.inOut'
+    }, "nameComplete")
+    .to(btn,
+      { y: 0, autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(1.5)', clearProps: 'transform' },
+      "nameComplete"
+    )
+    .to(hint,
+      { autoAlpha: 1, duration: 0.6, ease: 'power2.out' },
+      "nameComplete+=0.3"
+    );
+}
 
 // App bootstrap.
 function initApp() {
@@ -1530,6 +1718,7 @@ function initApp() {
   initGameButtons();
   initLeaderboard();
   showScreen('splash');
+  playSplashIntro();
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

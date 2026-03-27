@@ -128,6 +128,11 @@ input {
   animation: subtleRiseIn 280ms ease-out both;
 }
 
+body.has-gsap-intro .screen.active,
+body.has-gsap-intro .screen.active>*:not(.background-logo):not(.background-logo-2):not(.hint-pill) {
+  animation: none !important;
+}
+
 .modal-overlay.open {
   animation: subtleFadeIn 220ms ease-out both;
 }
