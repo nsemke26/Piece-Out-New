@@ -67,10 +67,6 @@
   gap: 0.5em;
 }
 
-.btn-start-game:active {
-  transform: translateY(3px);
-}
-
 .hint-pill {
   background: #d9d9d9;
   padding: 0.65em 1.6em;
@@ -89,12 +85,19 @@
   }
 }
 
+@keyframes pulse-hint {
+  0% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+  50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+}
+
 #screen-splash .hint-pill {
   position: absolute;
   bottom: clamp(1.8rem, 4.2vh, 2.8rem);
   left: 50%;
   transform: translateX(-50%);
   margin-top: 0;
+  animation: pulse-hint 2s infinite ease-in-out;
 }
 
 .touch-icon {
