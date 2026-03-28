@@ -332,7 +332,7 @@
 }
 
 .puzzle-card__title {
-  font-size: clamp(.9rem, 1.6vmin, 1.4rem);
+  font-size: clamp(.9rem, 3vmin, 2rem);
   color: #fff;
   text-transform: uppercase;
 }
@@ -343,7 +343,7 @@
   border-radius: 86px !important;
   background: var(--card-color, var(--cat-accent));
   color: #fff;
-  font-size: clamp(.8rem, 1.2vmin, 1rem);
+  font-size: clamp(.8rem, 2vmin, 1.5rem);
   text-transform: uppercase;
   cursor: pointer;
   border: 2px solid #fff;
@@ -366,6 +366,43 @@
   box-shadow: 0 2px 0 var(--card-shadow, var(--cat-accent-shadow));
 }
 
-.movie-bg {
-  background-color: purple;
+/* BACKGROUND LOGO */
+img.bg-cat {
+  height: 50%;
+  position: absolute;
+  z-index: -1;
+  left: 20%;
+  rotate: -60deg;
+  transform: scaleX(-1);
+  top: 60%;
+  opacity: 30%;
+  animation: swayeffect 2s ease-in-out alternate infinite;
+}
+
+img.bg-cat-2 {
+  height: 50%;
+  position: absolute;
+  z-index: -1;
+  left: 80%;
+  top: -10%;
+  rotate: 90deg;
+  opacity: 30%;
+  animation: swayeffect 2s ease alternate infinite;
+}
+
+@keyframes swayeffect {
+  0% {
+    transform: translateY(5px);
+    transform: rotate(5deg);
+  }
+
+  100% {
+    transform: translateY(0);
+    transform: rotate(0);
+  }
+}
+
+/* LOGO WIDTH ADJUSTED TO SAME WIDTH AS THE BUTTONS */
+header.cat-header {
+  width: 25.5%;
 }
