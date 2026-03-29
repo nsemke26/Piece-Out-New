@@ -95,6 +95,7 @@
 }
 
 .help-image {
+  position: relative;
   width: clamp(120px, 22vmin, 280px);
   aspect-ratio: 1;
   border-radius: var(--radius-sm);
@@ -134,6 +135,24 @@
   font-size: clamp(.8rem, 1.4vmin, 1.1rem);
   color: var(--grey);
   line-height: 1.35;
+}
+
+.help-card__info{
+  position: absolute;
+  bottom: -0.5rem;
+  right: -1rem;
+  width: clamp(34px, 3.2vmin, 54px);
+  height: clamp(34px, 3.2vmin, 54px);
+  border-radius: clamp(16px, 38%, 30px);
+  border: 3px solid #5d54ac;
+  background: #fff;
+  color: #5d54ac;
+  font-size: clamp(1rem, 1.9vmin, 1.8rem);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition), background var(--transition), color var(--transition);
 }
 
 /* 
@@ -257,7 +276,7 @@
   }
 
   .modal-card--complete {
-    width: min(58vw, 1200px);
+    width: min(60vw, 1300px);
   }
 
   .modal-card--help,
