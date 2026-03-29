@@ -15,7 +15,7 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
     />
 
     <!-- Modular CSS Structure: Styles are split by screen/functionality for maintainability -->
@@ -44,14 +44,16 @@
     <div id="screen-splash" class="screen active">
       <div class="splash-content">
         <div class="text-logo">
-          <div class="text-logo__row">PIECE</div>
           <div class="text-logo__row">
-            OUT!<span class="text-logo__dash">-</span>
+            <span>P</span><span>I</span><span>E</span><span>C</span><span>E</span>
+          </div>
+          <div class="text-logo__row">
+            <span>O</span><span>U</span><span>T</span><span>!</span><span class="text-logo__dash">-</span>
           </div>
         </div>
 
-        <button id="btn-splash" class="btn btn-start-game">
-          START GAME <span class="play-icon"></span>
+        <button id="btn-splash" class="btn btn--orange btn-start-game">
+          START GAME <span class="btn-icon"><i class="ph ph-play"></i></span>
         </button>
       </div>
       <div class="hint-pill">
@@ -82,7 +84,7 @@
           />
         </div>
         <button id="btn-start-named" class="btn btn--orange btn--wide">
-          START GAME <span class="btn-icon">&#9654;</span>
+          START GAME <span class="btn-icon"><i class="ph ph-play"></i></span>
         </button>
         <button id="btn-guest" class="btn btn--blue btn--wide">
           PLAY AS GUEST
@@ -111,8 +113,10 @@
       <div class="cat-main">
         <div id="cat-grid" class="cat-grid"></div>
         <button id="btn-random" class="btn btn--dark btn--wide">
-          RANDOM <span class="btn-icon"><i class="ph-fill ph-shuffle"></i></span>
+          RANDOM <span class="btn-icon"><i class="ph ph-shuffle"></i></span>
         </button>
+        <img  class="bg-cat" src="images/logo.png" alt="">
+        <img  class="bg-cat-2" src="images/logo.png" alt="">
       </div>
     </div>
   </div>
@@ -138,11 +142,12 @@
       </div>
       <div class="game-footer">
         <button id="btn-back" class="btn btn--orange">
-          &larr; BACK
+          <span class="btn-icon"><i class="ph ph-arrow-left"></i></span> BACK
         </button>
         <div class="game-footer__center">
-          <button id="btn-reset" class="btn btn--purple">&#8635; RESET</button>
-          <button id="btn-help" class="btn btn--blue">&#9432; HELP</button>
+          <button id="btn-reset" class="btn btn--purple"><span class="btn-icon"><i class="ph ph-arrow-counter-clockwise"></i></span> RESET</button>
+          <button id="btn-help" class="btn btn--blue"><span class="btn-icon"><i class="ph ph-info"></i></span> HELP</button>
+          <button id="btn-compare" class="btn btn--outline-orange"><span class="btn-icon"><i class="ph ph-eye"></i></span> HOLD TO VIEW</button>
         </div>
         <!-- Debug tool for development testing -->
         <button
@@ -150,7 +155,7 @@
           class="btn-debug"
           title="Debug: Auto-solve"
         >
-          &#128027;
+          <i class="ph ph-bug"></i>
         </button>
       </div>
       <img src="images/background-logo.svg" alt="" class="background-logo">
@@ -185,7 +190,7 @@
           <div class="lb-header-group">
             <div class="lb-title-wrap">
               <h2 class="lb-heading">LEADERBOARD</h2>
-              <i class="ph-fill ph-crown lb-trophy-icon" aria-hidden="true"></i>
+              <i class="ph ph-crown lb-trophy-icon" aria-hidden="true"></i>
             </div>
             <p class="lb-sub">GLOBAL HIGH SCORES &bull; THIS WEEK</p>
           </div>
@@ -210,12 +215,12 @@
           </div>
 
           <div class="lb-actions">
-            <button id="btn-lb-restart" class="btn btn-restart">
-              <img src="images/restart.svg" alt="" class="btn-svg-icon" />
+            <button id="btn-lb-restart" class="btn btn--orange">
+              <span class="btn-icon"><i class="ph ph-arrow-counter-clockwise"></i></span>
               RESTART
             </button>
-            <button id="btn-lb-home" class="btn btn-home">
-              <img src="images/home.svg" alt="" class="btn-svg-icon" /> HOME
+            <button id="btn-lb-home" class="btn btn--outline-orange">
+              <span class="btn-icon"><i class="ph ph-house"></i></span> HOME
             </button>
           </div>
         </div>
@@ -231,7 +236,7 @@
   -->
     <div id="modal-help" class="modal-overlay">
       <div class="modal-card modal-card--help">
-        <button id="btn-help-close" class="modal-card__close" aria-label="Close Help Modal">&#10005;</button>
+        <button id="btn-help-close" class="modal-card__close" aria-label="Close Help Modal"><i class="ph ph-x"></i></button>
         <h2 id="help-name" class="help-info__name"></h2>
         <div class="help-body">
           <div id="help-image" class="help-image"></div>
@@ -257,7 +262,7 @@
   -->
     <div id="modal-complete" class="modal-overlay">
       <div class="modal-card modal-card--complete">
-        <button id="btn-cpl-close" class="modal-card__close" aria-label="Close Puzzle Complete Modal">&#10005;</button>
+        <button id="btn-cpl-close" class="modal-card__close" aria-label="Close Puzzle Complete Modal"><i class="ph ph-x"></i></button>
         <h2 class="modal-card__title">Puzzle Complete!!</h2>
         <div class="complete-body">
           <div class="complete-stats">
@@ -274,19 +279,20 @@
               <span id="stat-rank" class="stat-pill__value">&mdash;</span>
             </div>
           </div>
-          <div class="complete-actions">
-            <button id="btn-cpl-lb" class="btn btn--purple btn--sm">
-              <span class="btn-icon"><i class="ph-fill ph-crown" aria-hidden="true"></i></span>
-              Leaderboard
-            </button>
-            <button id="btn-cpl-cats" class="btn btn--orange btn--sm">
-              <span class="btn-icon"><i class="ph-fill ph-puzzle-piece" aria-hidden="true"></i></span>
-              Categories
-            </button>
-            <button id="btn-cpl-restart" class="btn btn--purple btn--sm">
-              &#8635; Restart
-            </button>
-          </div>
+
+        <div class="complete-actions">
+          <button id="btn-cpl-lb" class="btn btn--purple btn--sm">
+            <span class="btn-icon"><i class="ph ph-crown" aria-hidden="true"></i></span>
+            Leaderboard
+          </button>
+          <button id="btn-cpl-cats" class="btn btn--orange btn--sm">
+            <span class="btn-icon"><i class="ph ph-puzzle-piece" aria-hidden="true"></i></span>
+            Categories
+          </button>
+          <button id="btn-cpl-restart" class="btn btn--purple btn--sm">
+            <span class="btn-icon"><i class="ph ph-arrow-counter-clockwise"></i></span>
+            Restart
+          </button>
         </div>
       </div>
     </div>
@@ -300,7 +306,7 @@
   -->
     <div id="modal-details" class="modal-overlay">
       <div class="modal-card modal-card--details">
-        <button id="btn-details-close" class="modal-card__close" aria-label="Close Puzzle Details Modal">&#10005;</button>
+        <button id="btn-details-close" class="modal-card__close" aria-label="Close Puzzle Details Modal"><i class="ph ph-x"></i></button>
         <h2 class="modal-card__title">Puzzle Details</h2>
         <div class="details-body">
           <div id="details-image" class="details-image"></div>
@@ -312,7 +318,7 @@
         </div>
         <div class="details-actions">
           <button id="btn-details-play" class="btn btn--orange">
-            &#9654; PLAY
+            <span class="btn-icon"><i class="ph ph-play"></i></span> PLAY
           </button>
         </div>
       </div>

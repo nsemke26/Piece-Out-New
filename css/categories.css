@@ -4,28 +4,90 @@
    of puzzle cards.
    ========================================================================== */
 
-#screen-categories { justify-content: flex-start; }
+#screen-categories {
+  /* Category palette: edit these values to retheme each section quickly */
+  --color-landscapes: #FED700;
+  --shadow-landscapes: #B29600;
+  --color-movies: #72D0F1;
+  --shadow-movies: #3B9DBF;
+  --color-animals: #4ADE80;
+  --shadow-animals: #1F8A4C;
+  --color-all: #9D64AA;
+  --shadow-all: #6F4378;
+  --color-food: #F97316;
+  --shadow-food: #C04F06;
+  --color-art: #EC4899;
+  --shadow-art: #BE185D;
+  --cat-sidebar-bg: #8176DE;
+  --cat-accent: var(--color-landscapes);
+  --cat-accent-shadow: var(--shadow-landscapes);
+  --cat-card: var(--cat-accent);
+  justify-content: flex-start;
+}
 
 #screen-categories .background-logo,
 #screen-categories .background-logo-2 {
   display: none;
+  position: absolute;
+  z-index: 0;
 }
 
-/* Keep corner art consistent, but offset for the left sidebar area */
+/* Top-right corner shape */
 #screen-categories .background-logo {
-  left: 25%;
-  top: -4%;
-  height: 45%;
-  opacity: 0.5;
+  left: auto;
+  right: -2.8%;
+  top: -7%;
+  height: 34%;
+  opacity: 0.88;
   pointer-events: none;
+  transform: rotate(180deg);
+  transform-origin: top right;
 }
 
+/* Bottom-left corner shape */
 #screen-categories .background-logo-2 {
-  right: 0;
-  bottom: -4%;
-  height: 45%;
-  opacity: 0.5;
+  right: auto;
+  left: 23.2%;
+  bottom: -8%;
+  height: 35%;
+  opacity: 0.88;
   pointer-events: none;
+  transform: rotate(15.41deg);
+  transform-origin: bottom left;
+}
+
+#screen-categories[data-theme='landscapes'] {
+  --cat-accent: var(--color-landscapes);
+  --cat-accent-shadow: var(--shadow-landscapes);
+}
+
+#screen-categories[data-theme='movies'] {
+  --cat-accent: var(--color-movies);
+  --cat-accent-shadow: var(--shadow-movies);
+}
+
+#screen-categories[data-theme='animals'] {
+  --cat-accent: var(--color-animals);
+  --cat-accent-shadow: var(--shadow-animals);
+}
+
+#screen-categories[data-theme='all'] {
+  --cat-accent: var(--color-all);
+  --cat-accent-shadow: var(--shadow-all);
+}
+
+#screen-categories[data-theme='food'] {
+  --cat-accent: var(--color-food);
+  --cat-accent-shadow: var(--shadow-food);
+}
+
+#screen-categories[data-theme='art'] {
+  --cat-accent: var(--color-art);
+  --cat-accent-shadow: var(--shadow-art);
+}
+
+#screen-categories.active > * {
+  animation: none !important;
 }
 
 /* 
@@ -86,50 +148,57 @@
 .cat-sidebar {
   display: flex;
   flex-direction: column;
-  gap: clamp(.4rem, .8vmin, .8rem);
-  padding: clamp(11rem, 14vmin, 15rem) clamp(.6rem, 1.2vmin, 1.2rem) clamp(.8rem, 1.2vmin, 1.2rem);
+  gap: clamp(.65rem, 1.35vmin, 1.4rem);
+  padding: clamp(11.2rem, 14.2vmin, 15.2rem) clamp(1rem, 2vmin, 2rem) clamp(1.2rem, 1.8vmin, 1.8rem);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   flex-shrink: 0;
   /* width: clamp(130px, 20vw, 260px); */
   scrollbar-width: thin;
   justify-content: center;
-  background-color: var(--purple-light);
-  width: 25%;
+  background-color: var(--cat-sidebar-bg);
+  width: 27%;
 }
 
 /* Individual category buttons */
 .cat-btn {
   display: flex;
   align-items: center;
-  gap: .5em;
+  justify-content: flex-start;
+  gap: .85em;
   width: 100%;
-  padding: .55em 1em;
-  font-size: clamp(1rem, 3vw, 3rem);
-  font-weight: 400;
+  min-height: clamp(72px, 9.6vmin, 102px);
+  padding: .92em 1.5em;
+  font-weight: 900;
   text-transform: uppercase;
-  border-radius: 2rem;
-  border: 10px solid white;
-  background: transparent;
+  border-radius: 86px !important;
+  border: 3px solid rgba(255, 255, 255, .9);
+  background: rgba(255, 255, 255, .12);
   color: white;
   cursor: pointer;
-  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  font-size: clamp(1.45rem, 3.35vmin, 2.4rem);
+  letter-spacing: .02em;
   text-wrap: nowrap;
-  margin: .2rem 0;
+  margin: .36rem 0;
+  box-shadow: 0 4px 0 rgba(255, 255, 255, .25);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .12);
 }
 
 .cat-btn.active {
-  background: var(--orange);
+  background: var(--cat-accent);
   color: #fff;
-  border-color: var(--orange);
+  border-color: var(--cat-accent);
+  box-shadow: 0 6px 0 var(--cat-accent-shadow);
 }
 
 .cat-btn:not(.active):hover {
-  background: var(--blue-light);
-  border-color: var(--blue-light);
+  background: rgba(255, 255, 255, .18);
+  border-color: #fff;
+  transform: translateY(-1px);
 }
 
-.cat-btn__icon { font-size: 1.15em; }
+.cat-btn__icon { font-size: 1.42em; }
 
 /* 
    --------------------------------------------------------------------------
@@ -205,7 +274,7 @@
    -------------------------------------------------------------------------- 
 */
 .puzzle-card {
-  background: var(--orange);
+  background: var(--card-color, var(--cat-card));
   border-radius: 2rem;
   overflow: hidden;
   display: flex;
@@ -216,6 +285,31 @@
   aspect-ratio: 1 / 1;
   padding: clamp(.95rem, 1.6vmin, 1.6rem);
   gap: clamp(.6rem, 1vmin, 1rem);
+}
+
+.puzzle-card[data-category='landscapes'] {
+  --card-color: var(--color-landscapes);
+  --card-shadow: var(--shadow-landscapes);
+}
+
+.puzzle-card[data-category='movies'] {
+  --card-color: var(--color-movies);
+  --card-shadow: var(--shadow-movies);
+}
+
+.puzzle-card[data-category='animals'] {
+  --card-color: var(--color-animals);
+  --card-shadow: var(--shadow-animals);
+}
+
+.puzzle-card[data-category='food'] {
+  --card-color: var(--color-food);
+  --card-shadow: var(--shadow-food);
+}
+
+.puzzle-card[data-category='art'] {
+  --card-color: var(--color-art);
+  --card-shadow: var(--shadow-art);
 }
 
 .puzzle-card:hover { transform: scale(1.02); }
@@ -238,22 +332,77 @@
 }
 
 .puzzle-card__title {
-  font-size: clamp(2rem, 1.6vmin, 1.4rem);
+  font-size: clamp(.9rem, 3vmin, 2rem);
   color: #fff;
   text-transform: uppercase;
 }
 
 .puzzle-card__details {
-  padding: .25em .7em;
-  border-radius: var(--radius-sm);
-  background: var(--purple);
+  min-height: clamp(36px, 4.8vmin, 52px);
+  padding: .35em .95em;
+  border-radius: 86px !important;
+  background: var(--card-color, var(--cat-accent));
   color: #fff;
-  font-size: clamp(2rem, 1.2vmin, 1rem);
+  font-size: clamp(.8rem, 2vmin, 1.5rem);
   text-transform: uppercase;
   cursor: pointer;
-  border: none;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 0 var(--card-shadow, var(--cat-accent-shadow));
 }
 
-.movie-bg {
-  background-color: purple;
+#screen-categories #btn-random {
+  --btn-shadow-color: var(--cat-accent-shadow);
+  background: var(--cat-accent);
+  width: fit-content;
+  max-width: none;
+  min-width: clamp(132px, 18vmin, 220px);
+  border-radius: clamp(26px, 5vmin, 44px) !important;
+  padding-inline: clamp(1rem, 2.2vmin, 1.6rem);
+  align-self: flex-end;
+}
+
+.puzzle-card__details:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--card-shadow, var(--cat-accent-shadow));
+}
+
+/* BACKGROUND LOGO */
+img.bg-cat {
+  height: 50%;
+  position: absolute;
+  z-index: -1;
+  left: 20%;
+  rotate: -60deg;
+  transform: scaleX(-1);
+  top: 60%;
+  opacity: 30%;
+  animation: swayeffect 2s ease-in-out alternate infinite;
+}
+
+img.bg-cat-2 {
+  height: 50%;
+  position: absolute;
+  z-index: -1;
+  left: 80%;
+  top: -10%;
+  rotate: 90deg;
+  opacity: 30%;
+  animation: swayeffect 2s ease alternate infinite;
+}
+
+@keyframes swayeffect {
+  0% {
+    transform: translateY(5px);
+    transform: rotate(5deg);
+  }
+
+  100% {
+    transform: translateY(0);
+    transform: rotate(0);
+  }
+}
+
+/* LOGO WIDTH ADJUSTED TO SAME WIDTH AS THE BUTTONS */
+header.cat-header {
+  width: 25.5%;
 }
