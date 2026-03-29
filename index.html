@@ -264,32 +264,34 @@
       <div class="modal-card modal-card--complete">
         <button id="btn-cpl-close" class="modal-card__close" aria-label="Close Puzzle Complete Modal">&#10005;</button>
         <h2 class="modal-card__title">Puzzle Complete!!</h2>
-        <div class="complete-stats">
-          <div class="stat-pill stat-pill--blue">
-            <span class="stat-pill__label">Moves Made</span>
-            <span id="stat-moves" class="stat-pill__value">0</span>
+        <div class="complete-body">
+          <div class="complete-stats">
+            <div class="stat-pill stat-pill--blue">
+              <span class="stat-pill__label">Moves Made</span>
+              <span id="stat-moves" class="stat-pill__value">0</span>
+            </div>
+            <div class="stat-pill stat-pill--yellow">
+              <span class="stat-pill__label">Time Taken</span>
+              <span id="stat-time" class="stat-pill__value">0:00</span>
+            </div>
+            <div class="stat-pill stat-pill--green">
+              <span class="stat-pill__label">Leaderboard</span>
+              <span id="stat-rank" class="stat-pill__value">&mdash;</span>
+            </div>
           </div>
-          <div class="stat-pill stat-pill--yellow">
-            <span class="stat-pill__label">Time Taken</span>
-            <span id="stat-time" class="stat-pill__value">0:00</span>
+          <div class="complete-actions">
+            <button id="btn-cpl-lb" class="btn btn--purple btn--sm">
+              <span class="btn-icon"><i class="ph-fill ph-crown" aria-hidden="true"></i></span>
+              Leaderboard
+            </button>
+            <button id="btn-cpl-cats" class="btn btn--orange btn--sm">
+              <span class="btn-icon"><i class="ph-fill ph-puzzle-piece" aria-hidden="true"></i></span>
+              Categories
+            </button>
+            <button id="btn-cpl-restart" class="btn btn--purple btn--sm">
+              &#8635; Restart
+            </button>
           </div>
-          <div class="stat-pill stat-pill--green">
-            <span class="stat-pill__label">Leaderboard</span>
-            <span id="stat-rank" class="stat-pill__value">&mdash;</span>
-          </div>
-        </div>
-        <div class="complete-actions">
-          <button id="btn-cpl-lb" class="btn btn--purple btn--sm">
-            <span class="btn-icon"><i class="ph-fill ph-crown" aria-hidden="true"></i></span>
-            Leaderboard
-          </button>
-          <button id="btn-cpl-cats" class="btn btn--orange btn--sm">
-            <span class="btn-icon"><i class="ph-fill ph-puzzle-piece" aria-hidden="true"></i></span>
-            Categories
-          </button>
-          <button id="btn-cpl-restart" class="btn btn--purple btn--sm">
-            &#8635; Restart
-          </button>
         </div>
       </div>
     </div>
