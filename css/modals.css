@@ -34,7 +34,7 @@
   flex-direction: column;
   align-items: center;
   gap: clamp(.8rem, 1.5vmin, 1.5rem);
-  border: 4px solid var(--purple);
+  border: 4px solid #5d54ac;
 }
 
 .modal-card__close {
@@ -44,9 +44,9 @@
   width: clamp(34px, 3.2vmin, 54px);
   height: clamp(34px, 3.2vmin, 54px);
   border-radius: clamp(16px, 38%, 30px);
-  border: 3px solid var(--purple);
+  border: 3px solid #5d54ac;
   background: #fff;
-  color: var(--purple);
+  color: #5d54ac;
   font-size: clamp(1rem, 1.9vmin, 1.8rem);
   line-height: 1;
   display: inline-flex;
@@ -56,7 +56,7 @@
 }
 
 .modal-card__close:hover {
-  background: var(--purple);
+  background: #5d54ac;
   color: #fff;
 }
 
@@ -66,7 +66,8 @@
 
 .modal-card__title {
   font-size: clamp(1.5rem, 3vmin, 3rem);
-  color: var(--purple);
+  color: white;
+  letter-spacing: 0.1rem;
   text-transform: uppercase;
   text-align: center;
 }
@@ -77,11 +78,20 @@
    Shows reference image and basic instructions.
    -------------------------------------------------------------------------- 
 */
+
+.modal-card--help, .modal-card--details{
+  background-color: var(--purple);
+  padding: clamp(1.5rem, 2vmin, 3rem) clamp(1rem, 1vmin, 1rem) clamp(1rem, 1vmin, 1rem)
+}
+
 .help-body {
   display: flex;
   gap: clamp(1rem, 2vmin, 2rem);
   align-items: flex-start;
   width: 100%;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
 }
 
 .help-image {
@@ -93,11 +103,17 @@
   flex-shrink: 0;
 }
 
+.help-image-ref{
+  color: var(--grey);
+}
+
 .help-info { flex: 1; }
 
 .help-info__name {
   font-size: clamp(1.2rem, 2.2vmin, 2rem);
-  margin-bottom: .3em;
+  /* margin-bottom: .5em; */
+  color: white;
+  letter-spacing: 0.1rem;
 }
 
 .help-info__desc {
@@ -126,7 +142,21 @@
    Displays performance stats and leaderboard ranking summary.
    -------------------------------------------------------------------------- 
 */
-.modal-card--complete { width: clamp(300px, 50vmin, 540px); }
+.modal-card--complete { 
+  width: clamp(300px, 50vmin, 540px); 
+  background-color: var(--purple);
+  padding: clamp(1.5rem, 2vmin, 3rem) clamp(1rem, 1vmin, 1rem) clamp(1rem, 1vmin, 1rem)
+}
+
+.complete-body{
+  display: flex;
+  gap: clamp(1rem, 2vmin, 2rem);
+  flex-direction: column;
+  width: 100%;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+}
 
 .complete-stats {
   display: flex;
@@ -166,11 +196,22 @@
    Pre-game informational dialog.
    -------------------------------------------------------------------------- 
 */
+
+.modal-card--details{
+  .modal-card__title{
+    color: white;
+    letter-spacing: 0.1rem;
+  }
+}
+
 .details-body {
   display: flex;
   gap: clamp(1rem, 2vmin, 2rem);
   align-items: flex-start;
   width: 100%;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
 }
 
 .details-image {
@@ -206,12 +247,17 @@
   .modal-card {
     max-width: min(82vw, 1800px);
     max-height: 88vh;
-    padding: clamp(2.2rem, 3.2vmin, 4rem);
+    /* padding: clamp(2.2rem, 3.2vmin, 4rem); */
     gap: clamp(1.2rem, 1.8vmin, 2.2rem);
   }
 
+  .modal-card--help{
+    background-color: var(--purple);
+    padding: clamp(1.5rem, 2vmin, 3rem) clamp(1rem, 1vmin, 1rem) clamp(1rem, 1vmin, 1rem)
+  }
+
   .modal-card--complete {
-    width: min(58vw, 1150px);
+    width: min(58vw, 1200px);
   }
 
   .modal-card--help,

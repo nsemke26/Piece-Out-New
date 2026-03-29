@@ -237,14 +237,14 @@
     <div id="modal-help" class="modal-overlay">
       <div class="modal-card modal-card--help">
         <button id="btn-help-close" class="modal-card__close" aria-label="Close Help Modal"><i class="ph ph-x"></i></button>
-        <h2 class="modal-card__title">Help</h2>
+        <h2 id="help-name" class="help-info__name"></h2>
         <div class="help-body">
           <div id="help-image" class="help-image"></div>
           <div class="help-info">
-            <h3 id="help-name" class="help-info__name"></h3>
+            <p class="help-info__attr-label"><strong>About Puzzle</strong></p>
             <p id="help-desc" class="help-info__desc"></p>
             <p class="help-info__attr-label"><strong>How to play</strong></p>
-            <p class="help-info__attr">
+            <p class="help-info__desc">
               Slide tiles by tapping or dragging them into the empty space.
               Arrange all pieces to complete the image.
             </p>
@@ -264,20 +264,22 @@
       <div class="modal-card modal-card--complete">
         <button id="btn-cpl-close" class="modal-card__close" aria-label="Close Puzzle Complete Modal"><i class="ph ph-x"></i></button>
         <h2 class="modal-card__title">Puzzle Complete!!</h2>
-        <div class="complete-stats">
-          <div class="stat-pill stat-pill--blue">
-            <span class="stat-pill__label">Moves Made</span>
-            <span id="stat-moves" class="stat-pill__value">0</span>
+        <div class="complete-body">
+          <div class="complete-stats">
+            <div class="stat-pill stat-pill--blue">
+              <span class="stat-pill__label">Moves Made</span>
+              <span id="stat-moves" class="stat-pill__value">0</span>
+            </div>
+            <div class="stat-pill stat-pill--yellow">
+              <span class="stat-pill__label">Time Taken</span>
+              <span id="stat-time" class="stat-pill__value">0:00</span>
+            </div>
+            <div class="stat-pill stat-pill--green">
+              <span class="stat-pill__label">Leaderboard</span>
+              <span id="stat-rank" class="stat-pill__value">&mdash;</span>
+            </div>
           </div>
-          <div class="stat-pill stat-pill--yellow">
-            <span class="stat-pill__label">Time Taken</span>
-            <span id="stat-time" class="stat-pill__value">0:00</span>
-          </div>
-          <div class="stat-pill stat-pill--green">
-            <span class="stat-pill__label">Leaderboard</span>
-            <span id="stat-rank" class="stat-pill__value">&mdash;</span>
-          </div>
-        </div>
+
         <div class="complete-actions">
           <button id="btn-cpl-lb" class="btn btn--purple btn--sm">
             <span class="btn-icon"><i class="ph ph-crown" aria-hidden="true"></i></span>
