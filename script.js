@@ -253,15 +253,20 @@ function initSounds() {
   sounds.invalidMove = createSound(SOUND.invalidMoveSrc, SOUND.invalidMoveVolume);
 }
 
-// Safe play helper; ignores autoplay errors from the browser.
+// Safe play helper; wraps everything in try/catch so that:
+//  - Missing/404 audio files don't throw sync exceptions that can crash click handlers
+//  - Browser autoplay policy rejections are silently ignored
+//  - Setting currentTime = 0 on a broken Audio element can throw -- this catches it too
 function playSound(soundKey) {
-  const audio = sounds[soundKey];
-  if (!audio) return;
-  audio.currentTime = 0;
-  const maybePromise = audio.play();
-  if (maybePromise && typeof maybePromise.catch === 'function') {
-    maybePromise.catch(() => {});
-  }
+  try {
+    const audio = sounds[soundKey];
+    if (!audio) return;
+    audio.currentTime = 0;
+    const maybePromise = audio.play();
+    if (maybePromise && typeof maybePromise.catch === 'function') {
+      maybePromise.catch(() => {}); // suppress unhandled rejection from autoplay policy
+    }
+  } catch (_) {} // suppress any sync error from a broken/missing audio element
 }
 
 // Crop source image to square once, then reuse from cache.
