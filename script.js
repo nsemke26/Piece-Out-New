@@ -90,6 +90,15 @@ const CATEGORIES = [
   { id: 'food',       name: 'Food',               icon: 'ph ph-hamburger' },
   { id: 'art',        name: 'Art',  icon: 'ph ph-palette' },
 ];
+const DEFAULT_BOARD_ACCENT = '#9275D3';
+const CATEGORY_ACCENTS = {
+  landscapes: '#FED700',
+  movies: '#72D0F1',
+  animals: '#4ADE80',
+  all: '#9D64AA',
+  food: '#F97316',
+  art: '#EC4899',
+};
 const PUZZLES = [
   // Landscapes
   { id:'land-1', title:'Royal Canadian Mint',             description:'An iconic view of the Royal Canadian Mint, known for producing circulation and collector coins.',  category:'landscapes', image: "images/landscape-1.jpg" },
@@ -227,6 +236,29 @@ function cacheDom() {
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+
+function hexToRgbString(hex) {
+  const normalized = String(hex).trim().replace('#', '');
+  const fullHex = normalized.length === 3
+    ? normalized.split('').map((char) => `${char}${char}`).join('')
+    : normalized;
+  if (!/^[0-9a-fA-F]{6}$/.test(fullHex)) return '146, 117, 211';
+  const value = Number.parseInt(fullHex, 16);
+  const r = (value >> 16) & 255;
+  const g = (value >> 8) & 255;
+  const b = value & 255;
+  return `${r}, ${g}, ${b}`;
+}
+
+function applyPuzzleBoardTheme(categoryId) {
+  if (!dom.puzzleGrid) return;
+  const accent = CATEGORY_ACCENTS[categoryId] || DEFAULT_BOARD_ACCENT;
+  const accentRgb = hexToRgbString(accent);
+  dom.puzzleGrid.style.setProperty('--board-accent', accent);
+  dom.puzzleGrid.style.setProperty('--board-accent-rgb', accentRgb);
+  GAME_INTRO_MOTION.readyAccentBoardShadow = `0 18px 42px rgba(${accentRgb}, .22)`;
+}
+
 // Fisher-Yates shuffle keeps the "All" page feeling fresh on each visit.
 function shuffle(list) {
   const arr = [...list];
@@ -655,17 +687,20 @@ function createTiles() {
 
   for (let num = 1; num < TILES; num++) {
     const el = document.createElement('div');
+    const face = document.createElement('div');
     el.className = 'puzzle-tile';
+    face.className = 'puzzle-tile__face';
     el.dataset.tile = num;
 
     const srcRow = Math.floor((num - 1) / GRID);
     const srcCol = (num - 1) % GRID;
     const bx = (srcCol / (GRID - 1)) * 100;
     const by = (srcRow / (GRID - 1)) * 100;
-    el.style.backgroundImage = `url('${tileImageSrc}')`;
-    el.style.backgroundSize = `${GRID * 100}% ${GRID * 100}%`;
-    el.style.backgroundPosition = `${bx}% ${by}%`;
+    face.style.backgroundImage = `url('${tileImageSrc}')`;
+    face.style.backgroundSize = `${GRID * 100}% ${GRID * 100}%`;
+    face.style.backgroundPosition = `${bx}% ${by}%`;
 
+    el.appendChild(face);
     tileEls[num] = el;
     dom.puzzleGrid.appendChild(el);
   }
@@ -1322,6 +1357,7 @@ async function startGame(puzzleId) {
   state.boardImageSrc = await getSquareImageSrc(pz.image);
   if (state.startSessionId !== sessionId) return;
 
+  applyPuzzleBoardTheme(pz.category);
   showScreen('game');
   if (dom.puzzleGrid) {
     dom.puzzleGrid.style.setProperty('--puzzle-guide-image', `url('${state.boardImageSrc}')`);
@@ -1727,6 +1763,3 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
-
-
-

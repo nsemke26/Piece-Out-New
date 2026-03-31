@@ -230,11 +230,21 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
 .puzzle-grid {
   --puzzle-guide-image: none;
   --puzzle-grid-size: 3;
+  --tile-gap: clamp(4px, 0.8vmin, 8px);
+  --tile-radius: 1.5rem;
+  --board-accent: var(--purple-light);
+  --board-accent-rgb: 146, 117, 211;
+  --board-overlay-tint: rgba(var(--board-accent-rgb), .94);
+  --board-rest-shadow: 0 22px 52px rgba(var(--board-accent-rgb), .26);
+  --board-rest-shadow-reduced: 0 12px 28px rgba(var(--board-accent-rgb), .2);
+  --board-progress-shadow: 0 12px 28px rgba(var(--board-accent-rgb), .16);
+  --board-complete-shadow-strong: 0 30px 68px rgba(var(--board-accent-rgb), .3);
+  --board-complete-shadow-soft: 0 24px 58px rgba(var(--board-accent-rgb), .26);
   position: relative;
   width: var(--game-board-width);
   aspect-ratio: 1;
-  background: var(--purple-light);
-  border-radius: 1.5rem;
+  background: var(--board-accent);
+  border-radius: var(--tile-radius);
   overflow: hidden;
   touch-action: none; /* Crucial for custom drag logic on touch devices */
   will-change: transform, box-shadow;
@@ -287,40 +297,40 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
 }
 
 .puzzle-grid.is-complete-rest {
-  box-shadow: 0 22px 52px rgba(129, 118, 222, .26);
+  box-shadow: var(--board-rest-shadow);
 }
 
 @keyframes boardProgressPulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 rgba(129, 118, 222, 0);
+    box-shadow: 0 0 0 rgba(var(--board-accent-rgb), 0);
   }
   45% {
     transform: scale(1.004);
-    box-shadow: 0 12px 28px rgba(129, 118, 222, .16);
+    box-shadow: var(--board-progress-shadow);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 rgba(129, 118, 222, 0);
+    box-shadow: 0 0 0 rgba(var(--board-accent-rgb), 0);
   }
 }
 
 @keyframes boardCompletePulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 rgba(129, 118, 222, 0);
+    box-shadow: 0 0 0 rgba(var(--board-accent-rgb), 0);
   }
   34% {
     transform: scale(1.034);
-    box-shadow: 0 30px 68px rgba(129, 118, 222, .3);
+    box-shadow: var(--board-complete-shadow-strong);
   }
   68% {
     transform: scale(1.014);
-    box-shadow: 0 24px 58px rgba(129, 118, 222, .26);
+    box-shadow: var(--board-complete-shadow-soft);
   }
   100% {
     transform: scale(1.01);
-    box-shadow: 0 22px 52px rgba(129, 118, 222, .26);
+    box-shadow: var(--board-rest-shadow);
   }
 }
 
@@ -348,9 +358,7 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   position: absolute;
   width: calc(100% / var(--puzzle-grid-size));
   height: calc(100% / var(--puzzle-grid-size));
-  background-size: calc(var(--puzzle-grid-size) * 100%) calc(var(--puzzle-grid-size) * 100%);
-  border: 0.25rem solid var(--purple-light);
-  border-radius: 1.5rem;
+  border-radius: var(--tile-radius);
   cursor: grab;
   overflow: hidden;
   transform:
@@ -372,6 +380,15 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   z-index: 3;
 }
 
+.puzzle-tile__face {
+  position: absolute;
+  inset: var(--tile-gap);
+  border-radius: calc(var(--tile-radius) - (var(--tile-gap) * 0.35));
+  background-repeat: no-repeat;
+  background-size: calc(var(--puzzle-grid-size) * 100%) calc(var(--puzzle-grid-size) * 100%);
+  background-position: center;
+}
+
 .puzzle-tile::after {
   content: '';
   position: absolute;
@@ -380,7 +397,7 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   pointer-events: none;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, 0) 36%),
-    rgba(146, 117, 211, .94);
+    var(--board-overlay-tint);
   opacity: var(--tile-intro-cover-opacity);
 }
 
@@ -575,7 +592,7 @@ body.has-gsap-intro #screen-game.active > *:not(.background-logo):not(.backgroun
   }
 
   #screen-game .puzzle-grid.is-complete-rest {
-    box-shadow: 0 12px 28px rgba(129, 118, 222, .2);
+    box-shadow: var(--board-rest-shadow-reduced);
   }
 }
 
