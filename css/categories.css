@@ -1,11 +1,7 @@
-/* ==========================================================================
-   PIECE OUT - CATEGORIES & PUZZLE SELECTION
-   Styles for the category navigation sidebar and the responsive grid 
-   of puzzle cards.
-   ========================================================================== */
+/* piece out - categories & puzzle selection */
 
 #screen-categories {
-  /* Category palette: edit these values to retheme each section quickly */
+  /* category palette: edit these values to retheme each section quickly. */
   --color-landscapes: #FED700;
   --shadow-landscapes: #B29600;
   --color-movies: #72D0F1;
@@ -32,7 +28,7 @@
   z-index: 0;
 }
 
-/* Top-right corner shape */
+/* top-right corner shape. */
 #screen-categories .background-logo {
   left: auto;
   right: -2.8%;
@@ -44,7 +40,7 @@
   transform-origin: top right;
 }
 
-/* Bottom-left corner shape */
+/* bottom-left corner shape. */
 #screen-categories .background-logo-2 {
   right: auto;
   left: 23.2%;
@@ -90,34 +86,39 @@
   animation: none !important;
 }
 
-/* 
-   --------------------------------------------------------------------------
-   HEADER
-   -------------------------------------------------------------------------- 
-*/
+/* header styles. */
 .cat-header {
   position: absolute;
   top: clamp(.8rem, 1.4vmin, 1.4rem);
   left: clamp(.8rem, 1.2vmin, 1.2rem);
-  z-index: 3;
-  width: calc(25% - clamp(1.6rem, 2.4vmin, 2.4rem));
-  text-align: center;
+  z-index: 10;
+  width: calc(100% - clamp(1.6rem, 2.4vmin, 2.4rem));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
+.cat-header__left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background-color: var(--bg);
+  padding: 0.8rem 1.6rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
 .cat-header__logo {
-  font-size: clamp(2.9rem, 5.6vmin, 5.4rem);
+  font-size: clamp(1.8rem, 4vmin, 2.8rem);
   color: var(--purple);
   text-transform: uppercase;
-  background-color: var(--bg);
-  padding: 1.4rem 2.8rem;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.85em;
-  width: 100%;
-  text-align: center;
-  white-space: nowrap;
-  border-radius: 2rem;
+  gap: 0.5em;
+  font-weight: 900;
 }
+
+
 
 .logo {
   width: clamp(76px, 6.3vmin, 120px);
@@ -125,12 +126,7 @@
   filter: none;
 }
 
-/* 
-   --------------------------------------------------------------------------
-   LAYOUT
-   Main view consists of a sidebar (nav) and a main scrollable area (grid).
-   -------------------------------------------------------------------------- 
-*/
+/* layout styles. */
 .cat-layout {
   position: relative;
   z-index: 1;
@@ -140,11 +136,7 @@
   overflow: hidden;
 }
 
-/* 
-   --------------------------------------------------------------------------
-   SIDEBAR (NAVIGATION)
-   -------------------------------------------------------------------------- 
-*/
+/* sidebar navigation. */
 .cat-sidebar {
   display: flex;
   flex-direction: column;
@@ -160,7 +152,7 @@
   width: 27%;
 }
 
-/* Individual category buttons */
+/* individual category buttons. */
 .cat-btn {
   display: flex;
   align-items: center;
@@ -200,11 +192,7 @@
 
 .cat-btn__icon { font-size: 1.42em; }
 
-/* 
-   --------------------------------------------------------------------------
-   MAIN GRID AREA
-   -------------------------------------------------------------------------- 
-*/
+/* main grid area. */
 .cat-main {
   flex: 1;
   display: flex;
@@ -267,12 +255,7 @@
   transform: translateY(0.04em);
 }
 
-/* 
-   --------------------------------------------------------------------------
-   PUZZLE CARD
-   Individual puzzle entry with image preview and details button.
-   -------------------------------------------------------------------------- 
-*/
+/* puzzle card styles. */
 .puzzle-card {
   background: var(--card-color, var(--cat-card));
   border-radius: 2rem;
@@ -366,7 +349,7 @@
   box-shadow: 0 2px 0 var(--card-shadow, var(--cat-accent-shadow));
 }
 
-/* BACKGROUND LOGO */
+/* background logo. */
 img.bg-cat {
   height: 50%;
   position: absolute;
@@ -402,7 +385,5 @@ img.bg-cat-2 {
   }
 }
 
-/* LOGO WIDTH ADJUSTED TO SAME WIDTH AS THE BUTTONS */
-header.cat-header {
-  width: 25.5%;
-}
+/* logo width adjustments. */
+/* info content (about & trivia). */

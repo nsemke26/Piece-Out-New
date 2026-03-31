@@ -5,42 +5,32 @@
     <title>PieceOut - Sliding Puzzle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Typography: Londrina Solid from Google Fonts -->
+    <!-- typography: londrina solid from google fonts. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&display=swap"
       rel="stylesheet"
     />
+    <!-- Phosphor Icons -->
     <link
       rel="stylesheet"
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
     />
 
-    <!-- Modular CSS Structure: Styles are split by screen/functionality for maintainability -->
+
     <link rel="stylesheet" href="./css/style.css" />
-    <!-- Global variables, reset, and common components -->
     <link rel="stylesheet" href="./css/landing.css" />
-    <!-- Splash and Name Entry screens -->
     <link rel="stylesheet" href="./css/categories.css" />
-    <!-- Category sidebar and Puzzle grid -->
     <link rel="stylesheet" href="./css/game.css" />
-    <!-- Active puzzle board and gameplay UI -->
     <link rel="stylesheet" href="./css/leaderboard.css" />
-    <!-- Post-game global high scores screen -->
     <link rel="stylesheet" href="./css/modals.css" />
-    <!-- Overlay dialogs for Help, Success, and Details -->
+    <link rel="icon" type="image/png" href="images/icons/Logo.png" />
   </head>
 
   <body>
-    <!-- 
-    ==========================================================================
-    SCREEN: SPLASH
-    The initial landing view. Features a bold, stylized text logo and a 
-    primary call-to-action to begin the game experience.
-    ========================================================================== 
-  -->
+    <!-- splash screen: initial landing view. -->
     <div id="screen-splash" class="screen active">
       <div class="splash-content">
         <div class="text-logo">
@@ -57,19 +47,13 @@
         </button>
       </div>
       <div class="hint-pill">
-        Tap the screen to interact <img src="images/tap-icon.svg" alt="" />
+        Tap the screen to interact <img src="images/icons/tap-icon.svg" alt="" />
       </div>
-      <img src="images/background-logo.svg" alt="" class="background-logo">
-      <img src="images/background-logo.svg" alt="" class="background-logo-2">
+      <img src="images/icons/background-logo.svg" alt="" class="background-logo">
+      <img src="images/icons/background-logo.svg" alt="" class="background-logo-2">
     </div>
 
-    <!-- 
-    ==========================================================================
-    SCREEN: NAME ENTRY
-    Allows users to personalize their experience. Includes validation for 
-    custom names and a 'Guest' option for quick entry using generated aliases.
-    ========================================================================== 
-  -->
+    <!-- name entry: player personalization. -->
     <div id="screen-name" class="screen">
       <div class="name-card">
         <h2 class="name-card__title">ENTER YOUR NAME</h2>
@@ -92,42 +76,32 @@
       </div>
     </div>
 
-    <!-- 
-    ==========================================================================
-    SCREEN: CATEGORIES
-    A catalog of available puzzles. Uses a dual-panel layout:
-    - Sidebar: Navigates through thematic categories (Landscapes, Animals, etc.)
-    - Main Grid: Displays puzzle cards for selection.
-    ========================================================================== 
-  -->
+    <!-- categories: puzzle catalog and filtering. -->
   <div id="screen-categories" class="screen">
-    <img src="images/background-logo.svg" alt="" class="background-logo">
-    <img src="images/background-logo.svg" alt="" class="background-logo-2">
+    <img src="images/icons/background-logo.svg" alt="" class="background-logo">
+    <img src="images/icons/background-logo.svg" alt="" class="background-logo-2">
     <header class="cat-header">
-      <span class="cat-header__logo"> <img src="images/Logo.png"  class="logo" alt=""> PIECE-OUT!</span>
+      <div class="cat-header__left">
+        <span class="cat-header__logo"> <img src="images/icons/Logo.png" class="logo" alt=""> PIECE-OUT!</span>
+      </div>
     </header>
     <div class="cat-layout">
-      <!-- Navigation for filtering puzzles -->
+      <!-- navigation for filtering puzzles. -->
       <nav id="cat-sidebar" class="cat-sidebar"></nav>
-      <!-- Dynamic grid where puzzle cards are injected via JavaScript -->
+      <!-- dynamic grid where puzzle cards are injected via javascript. -->
       <div class="cat-main">
         <div id="cat-grid" class="cat-grid"></div>
         <button id="btn-random" class="btn btn--dark btn--wide">
           RANDOM <span class="btn-icon"><i class="ph ph-shuffle"></i></span>
         </button>
-        <img  class="bg-cat" src="images/logo.png" alt="">
-        <img  class="bg-cat-2" src="images/logo.png" alt="">
+        <img  class="bg-cat" src="images/icons/Logo.png" alt="">
+        <img  class="bg-cat-2" src="images/icons/Logo.png" alt="">
       </div>
     </div>
   </div>
 
-    <!-- 
-    ==========================================================================
-    SCREEN: GAME
-    The core gameplay environment. Contains the 4x4 sliding puzzle board, 
-    real-time timer, and navigation controls.
-    ========================================================================== 
-  -->
+
+    <!-- game screen: core gameplay environment. -->
     <div id="screen-game" class="screen">
       
       <div class="game-header">
@@ -149,7 +123,7 @@
           <button id="btn-help" class="btn btn--blue"><span class="btn-icon"><i class="ph ph-info"></i></span> HELP</button>
           <button id="btn-compare" class="btn btn--outline-orange"><span class="btn-icon"><i class="ph ph-eye"></i></span> HOLD TO VIEW</button>
         </div>
-        <!-- Debug tool for development testing -->
+        <!-- debug tool for development testing. -->
         <button
           id="btn-debug-solve"
           class="btn-debug"
@@ -158,18 +132,11 @@
           <i class="ph ph-bug"></i>
         </button>
       </div>
-      <img src="images/background-logo.svg" alt="" class="background-logo">
-      <img src="images/background-logo.svg" alt="" class="background-logo-2">
+      <img src="images/icons/background-logo.svg" alt="" class="background-logo">
+      <img src="images/icons/background-logo.svg" alt="" class="background-logo-2">
     </div>
 
-    <!-- 
-    ==========================================================================
-    SCREEN: LEADERBOARD
-    Comprehensive results screen showing:
-    - Left Panel: The completed puzzle image and description.
-    - Right Panel: Global high scores and the player's personalized rank row.
-    ========================================================================== 
-  -->
+    <!-- leaderboard: results and high scores. -->
     <div id="screen-leaderboard" class="screen">
       <div class="lb-container">
         <!-- Left Panel: Puzzle Context -->
@@ -228,19 +195,13 @@
       </div>
     </div>
 
-    <!-- 
-    ==========================================================================
-    MODAL: HELP
-    In-game reference tool showing the target image and gameplay instructions.
-    ========================================================================== 
-  -->
+    <!-- help modal: reference and instructions. -->
     <div id="modal-help" class="modal-overlay">
       <div class="modal-card modal-card--help">
         <button id="btn-help-close" class="modal-card__close" aria-label="Close Help Modal"><i class="ph ph-x"></i></button>
         <h2 id="help-name" class="help-info__name"></h2>
         <div class="help-body">
           <div id="help-image" class="help-image">
-            <button id="btn-help-info" class="help-card__info" aria-label="Close Help Modal"><i class="ph ph-info"></i></button>
           </div>
           <div class="help-info">
             <p class="help-info__attr-label"><strong>About Puzzle</strong></p>
@@ -255,13 +216,7 @@
       </div>
     </div>
 
-    <!-- 
-    ==========================================================================
-    MODAL: PUZZLE COMPLETE
-    Victory dialog appearing immediately upon solving. Summarizes performance
-    metrics and provides navigational shortcuts.
-    ========================================================================== 
-  -->
+    <!-- complete modal: victory summary. -->
     <div id="modal-complete" class="modal-overlay">
       <div class="modal-card modal-card--complete">
         <button id="btn-cpl-close" class="modal-card__close" aria-label="Close Puzzle Complete Modal"><i class="ph ph-x"></i></button>
@@ -298,15 +253,9 @@
         </div>
       </div>
     </div>
-    </div> <!-- /modal-complete overlay (IMPORTANT: this closes #modal-complete -- do NOT remove or #modal-details will be nested inside it and hidden) -->
+    </div> <!-- /modal-complete overlay. -->
 
-    <!-- 
-    ==========================================================================
-    MODAL: DETAILS
-    Pre-game informational dialog for a specific puzzle, showing title, 
-    description, and category before the player commits to playing.
-    ========================================================================== 
-  -->
+    <!-- details modal: pre-game info. -->
     <div id="modal-details" class="modal-overlay">
       <div class="modal-card modal-card--details">
         <button id="btn-details-close" class="modal-card__close" aria-label="Close Puzzle Details Modal"><i class="ph ph-x"></i></button>
@@ -317,6 +266,7 @@
             <h3 id="details-name"></h3>
             <p id="details-desc"></p>
             <p id="details-cat"></p>
+            <p id="details-source"></p>
           </div>
         </div>
         <div class="details-actions">
@@ -328,7 +278,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-    <!-- Main Application Logic -->
-    <script src="./script.js"></script>
+    <!-- main application logic. -->
+    <script src="./js/script.js"></script>
   </body>
 </html>
