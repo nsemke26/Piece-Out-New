@@ -1344,8 +1344,14 @@ function stopTimer() {
   state.timerInterval = null;
 }
 
+// UPDATE TIMER calling the numbers to change
 function updateTimerDisplay(animate = false) {
-  // timer pulse for feedback.
+  const minutes = Math.floor(state.timeSeconds / 60);
+  const seconds = state.timeSeconds % 60;
+
+  dom.gameTimer.textContent =
+    `⏱ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
   if (animate && PERFORMANCE.enableTimerPulse) triggerTimerFeedback();
 }
 
